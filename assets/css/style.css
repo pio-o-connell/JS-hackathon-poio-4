@@ -224,6 +224,16 @@ body {
     background-color: #0d1013;
 }
 
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
 /* --------- Media queries */
 
 @media (max-width: 414px) {
