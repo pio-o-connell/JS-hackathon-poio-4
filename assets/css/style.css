@@ -7,6 +7,14 @@ body {
     text-align: center;
 }
 
+.hidden{
+    display:none;
+}
+
+.visible{
+    display:block;
+}
+
 /* --------- Heading */
 
 .heading {
@@ -34,7 +42,8 @@ body {
 }
 
 .question-area {
-    width: 50%;
+    display: flex; 
+    width: 80%;
     font-size: 2rem;
     margin: auto;
     padding: 50px 0;
@@ -42,6 +51,16 @@ body {
 
 .question-area span {
     padding: 0 15px;
+}
+
+.left {
+  flex: 1; /* takes 2 parts out of total 3 */
+  background-color: lightblue;
+}
+
+.right {
+  flex: 2; /* takes 1 part out of total 3 */
+  background-color: lightcoral;
 }
 
 .score-area {

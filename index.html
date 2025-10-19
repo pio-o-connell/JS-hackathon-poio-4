@@ -37,14 +37,36 @@
             </button> -->
         </div>
         <div class="question-area">
-            <span id="operand1">0</span>
+            <!-- <span id="operand1">0</span>
             <span id="operator">x</span>
             <span id="operand2">0</span>
             <span>=</span>
             <p class="answer-message">Enter Answer:</p>
-            <input id="answer-box" type="number">
+            <input id="answer-box" type="number"> -->
+            <div class="left">1/3 select country
+                 <div>
+                    <h2 id="question" class="quiz__question">:disabled,<br>then :enabled whilst loading 10 random countries, on selection , fetch & disable</h2>
+                    <label for="difficulty" class="hidden"  >Difficulty</label>
+                    <select id="difficulty" class=" hidden quiz__select" aria-label="Select difficulty">
+                        <option value="easy" selected>Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+            </div>
+            <div class="right">
+                2/3 do the quiz
+                  <div class="quiz__body">
+                    <h2 id="question" class="quiz__question">:disabled,<br> then :enabled whilst loading 10 specific questions from 9 random and country selected…</h2>
+                    <div id="media" class="quiz__media" aria-hidden="true"></div>
+                    <div id="options" class="quiz__options" role="listbox" aria-label="Answer choices"></div>
+                    <p id="feedback" class="quiz__feedback" aria-live="polite"></p>
+             </div>
+
+            </div>
         </div>
-         <button data-type="submit" class="btn btn--gray">Submit Answer</button>
+        <div> click population/currency/languages to begin /feedback to say correct or not </div>
+         <!-- <button  data-type="submit" class="btn btn--gray">Submit Answer</button> -->
     </div>
     <div class="score-area">
         <p class="scores"> Correct Answers  <span id="score">0</span></p>
