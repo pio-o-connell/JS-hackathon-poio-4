@@ -34,7 +34,7 @@ body {
     box-sizing: border-box;
     width: 85%;
     height: 65vh;
-    max-height: 1100px;
+    max-height: 1300px;
     max-width: 830px;
     margin-left: auto;
     margin-right: auto;
@@ -251,6 +251,17 @@ body {
 .row-3 button {
   border-radius: 12px;
   padding: 0.6rem 1rem;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease; /* smooth hover */
+}
+/* Hover effect for Row 2 & 3 buttons */
+.row-2 button:hover,
+.row-3 button:hover {
+  background-color: #0056b3; /* darker blue */
+  transform: scale(1.05); /* slight grow */
 }
 
 /* Row 4: centered dark grey message */
