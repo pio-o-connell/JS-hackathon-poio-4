@@ -34,7 +34,7 @@ body {
     box-sizing: border-box;
     width: 85%;
     height: 65vh;
-    max-height: 450px;
+    max-height: 1100px;
     max-width: 830px;
     margin-left: auto;
     margin-right: auto;
@@ -62,6 +62,36 @@ body {
   flex: 2; /* takes 1 part out of total 3 */
   background-color: lightcoral;
 }
+
+.item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column; /* or row */
+  gap: 10px;
+  max-width: 250px;
+}
+.country {
+  background-color: #e8edf1;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer; /* visually indicates clickability */
+  transition: background 0.2s, transform 0.1s;
+}
+
+.country:hover {
+  background-color: #d0d7df;
+  transform: scale(1.02);
+}
+
+.item-list.disabled {
+  pointer-events: none;   /* blocks clicks, hovers, etc. */
+  opacity: 0.5;           /* visually looks disabled */
+  user-select: none;      /* prevent text selection */
+}
+
 
 .score-area {
     margin: 5px auto;
