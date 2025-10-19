@@ -5,6 +5,9 @@ body {
     font-family: "Raleway", sans-serif;
     color: #445361;
     text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .hidden{
