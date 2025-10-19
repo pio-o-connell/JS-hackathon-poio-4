@@ -1,78 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 />
-    <link href="https://fonts.googleapis.com/css?family=Raleway%7CRighteous" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <title>World Quiz</title>
+     <link href="https://fonts.googleapis.com/css?family=Raleway%7CRighteous" rel="stylesheet">
+     <link rel="stylesheet" href="assets/css/style.css">
+     <title>World Quiz</title>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/favicon_io/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon_io/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon_io/">
+     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/favicon_io/android-chrome-192x192.png">
+     <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon_io/favicon-32x32.png">
+     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon_io/favicon-16x16.png">
 
-</head>
-<body>
-    <h1 class="heading">
-        <img class="logo" src="assets/images/logo/logo-250x100.png" alt="logo">World Quiz
-    </h1>
-  
-    <div class="game-area">
-        <div class="controls-area">
-          <div class="controls-area">
-            <button data-type="population" class="btn btn--big btn--green">
-                <!-- <i class="fas fa-plus"></i> -->
-                <i class=" fa-solid fa-people-group" style="color:green;"></i>
-            </button>
-            <button data-type="currency" class="btn btn--big btn--blue">
-                <i class=" fa-solid fa-euro-sign" style="color:blue;"></i>
-            </button>
-            <button data-type="languages" class="btn btn--big btn--orange">
-                <i class="fa-solid fa-language" style="color:orange"></i>
-            </button>
-            <!-- <button data-type="division" class="btn btn--big btn--red">
-                <i class="fas fa-divide"></i>
-            </button> -->
-        </div>
-        <div class="question-area">
-            <!-- <span id="operand1">0</span>
-            <span id="operator">x</span>
-            <span id="operand2">0</span>
-            <span>=</span>
-            <p class="answer-message">Enter Answer:</p>
-            <input id="answer-box" type="number"> -->
-            <div class="left">1/3 select country
-                 <div>
-                    <h2 id="question" class="quiz__question">:disabled,<br>then :enabled whilst loading 10 random countries, on selection , fetch & disable</h2>
-                    <label for="difficulty" class="hidden"  >Difficulty</label>
-                    <select id="difficulty" class=" hidden quiz__select" aria-label="Select difficulty">
-                        <option value="easy" selected>Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                    </select>
+    </head>
+    <body>
+        <h1 class="heading">
+            <img class="logo" src="assets/images/logo/logo-250x100.png" alt="logo">World Quiz
+        </h1> 
+        <div class="game-area">
+            <div class="controls-area ">
+                <div class="control-area">
+                    <button data-type="population" class="btn btn--big btn--green">
+                        <!-- <i class="fas fa-plus"></i> -->
+                        <i class=" fa-solid fa-people-group" style="color:green;"></i>
+                    </button>
+                    <button data-type="currency" class="btn btn--big btn--blue">
+                        <i class=" fa-solid fa-euro-sign" style="color:blue;"></i>
+                    </button>
+                    <button data-type="languages" class="btn btn--big btn--orange">
+                        <i class="fa-solid fa-language" style="color:orange"></i>
+                    </button>
+                    <!-- <button data-type="division" class="btn btn--big btn--red">
+                        <i class="fas fa-divide"></i>
+                    </button> -->
+                </div>
+                <div class="question-area">
+                
+                    <div class="left">              
+                            <!-- <h2 id="question" class="quiz__question">:disabled,<br>then :enabled whilst loading 10 random countries, on selection , fetch & disable</h2>
+                            <label for="difficulty" class="hidden"  >Difficulty</label>
+                            <select id="difficulty" class=" hidden quiz__select" aria-label="Select difficulty">
+                                <option value="easy" selected>Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select> -->
+                        <div id="media" class="quiz__media item-list.disabled" aria-hidden="true">
+                            <ul class="item-list">
+                                <li class="country" id="item1">Ethiopia</li>
+                                <li class="country" id="item2">Kenya</li>
+                                <li class="country" id="item3">Ecuador</li>
+                                <li class="country" id="item4">Guatemala</li>
+                                <li class="country" id="item5">Tanzania</li>
+                                <li class="country" id="item6">Panama</li>
+                                <li class="country" id="item7">Croatia</li>
+                                <li class="country" id="item8">Lithuania</li>
+                                <li class="country" id="item9">Slovenia</li>
+                                <li class="country" id="item10">Serbia</li>
+                            </ul>
+                        </div>
+                    </div>                   
+                    <div class="right">2/3 do the quiz
+                        <div class="quiz__body">
+                            <h2 id="question" class="quiz__question">:disabled,<br> then :enabled whilst loading 10 specific questions from 9 random and country selected…</h2>
+                            <div id="media" class="quiz__media" aria-hidden="true"></div>
+                            <div id="options" class="quiz__options" role="listbox" aria-label="Answer choices"></div>
+                            <p id="feedback" class="quiz__feedback" aria-live="polite"></p>
+                        </div>
                 </div>
             </div>
-            <div class="right">
-                2/3 do the quiz
-                  <div class="quiz__body">
-                    <h2 id="question" class="quiz__question">:disabled,<br> then :enabled whilst loading 10 specific questions from 9 random and country selected…</h2>
-                    <div id="media" class="quiz__media" aria-hidden="true"></div>
-                    <div id="options" class="quiz__options" role="listbox" aria-label="Answer choices"></div>
-                    <p id="feedback" class="quiz__feedback" aria-live="polite"></p>
-             </div>
-
+            <div class="message-info-disabled"> click population/currency/languages to begin /feedback to say correct or not
+            </div>
+            <!-- <button  data-type="submit" class="btn btn--gray">Submit Answer</button> -->    
+            <div class="score-area">
+                <p class="scores"> Correct Answers  <span id="score">0</span></p>
+                <p class="scores"> Incorrect Answers  <span id="incorrect">0</span></p>
             </div>
         </div>
-        <div> click population/currency/languages to begin /feedback to say correct or not </div>
-         <!-- <button  data-type="submit" class="btn btn--gray">Submit Answer</button> -->
-    </div>
-    <div class="score-area">
-        <p class="scores"> Correct Answers  <span id="score">0</span></p>
-        <p class="scores"> Incorrect Answers  <span id="incorrect">0</span></p>
-    </div>
-
-    <script src="assets/js/script.js"></script>
-</body>
+        <footer>
+            <p>&copy; 2023 World Quiz. All rights reserved.</p>
+        </footer>
+        <script src="assets/js/script.js"></script>
+    </body>
 </html>
