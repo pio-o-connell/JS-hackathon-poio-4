@@ -44,14 +44,14 @@ body {
 .question-area {
     display: flex; 
     width: 80%;
-    font-size: 2rem;
+    font-size: 1rem;
     margin: auto;
     padding: 50px 0;
 }
 
-.question-area span {
+/* .question-area span {
     padding: 0 15px;
-}
+} */
 
 .left {
   flex: 1; /* takes 2 parts out of total 3 */

@@ -21,7 +21,7 @@
   
     <div class="game-area">
         <div class="controls-area">
-          <div class="controls-area">
+          <div class="control-area">
             <button data-type="population" class="btn btn--big btn--green">
                 <!-- <i class="fas fa-plus"></i> -->
                 <i class=" fa-solid fa-people-group" style="color:green;"></i>
@@ -55,24 +55,29 @@
                 </div>
             </div>
             <div class="right">
-                2/3 do the quiz
+               2/3 do the quiz
                   <div class="quiz__body">
                     <h2 id="question" class="quiz__question">:disabled,<br> then :enabled whilst loading 10 specific questions from 9 random and country selected…</h2>
                     <div id="media" class="quiz__media" aria-hidden="true"></div>
                     <div id="options" class="quiz__options" role="listbox" aria-label="Answer choices"></div>
                     <p id="feedback" class="quiz__feedback" aria-live="polite"></p>
-             </div>
-
+                </div>
             </div>
         </div>
-        <div> click population/currency/languages to begin /feedback to say correct or not </div>
+        <div> 
+            click population/currency/languages to begin /feedback to say correct or not
+        </div>
          <!-- <button  data-type="submit" class="btn btn--gray">Submit Answer</button> -->
+    
+        <div class="score-area">
+            <p class="scores"> Correct Answers  <span id="score">0</span></p>
+            <p class="scores"> Incorrect Answers  <span id="incorrect">0</span></p>
+        </div>
     </div>
-    <div class="score-area">
-        <p class="scores"> Correct Answers  <span id="score">0</span></p>
-        <p class="scores"> Incorrect Answers  <span id="incorrect">0</span></p>
-    </div>
+    <footer>
 
+        <p>&copy; 2023 World Quiz. All rights reserved.</p>
+    </footer>
     <script src="assets/js/script.js"></script>
 </body>
 </html>
