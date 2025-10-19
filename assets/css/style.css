@@ -8,6 +8,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    bottom:430px;
 }
 
 .hidden{
@@ -97,6 +98,7 @@ body {
 
 
 .score-area {
+    display:flex;
     margin: 5px auto;
     width: 60%;
     font-size: 1.2rem;
@@ -277,7 +279,7 @@ body {
 
 
 footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
   background: #333;
