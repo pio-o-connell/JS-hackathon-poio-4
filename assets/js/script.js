@@ -91,7 +91,7 @@ function setupRightPaneGameArea(country) {
 
     // Enable any buttons and build event listeners
     const question = document.getElementsByClassName("row-1");
-    question[0].textContent = `Quiz about ${country}`;
+    question[0].textContent = `Quiz with ${country} and 9 others`;
     const buttons = rightPane[0].getElementsByTagName('button');
     for (let button of buttons) {
         // Visually and functionally enab
