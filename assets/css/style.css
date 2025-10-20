@@ -8,7 +8,6 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    bottom:430px;
 }
 
 .hidden{
@@ -34,11 +33,12 @@ body {
 /* --------- Game layout */
 
 .game-area {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto; /* fill available space to push footer down */
     background-color: #E6ECF0;
     box-sizing: border-box;
     width: 85%;
-    height: 65vh;
-    max-height: 1300px;
     max-width: 830px;
     margin-left: auto;
     margin-right: auto;
@@ -277,15 +277,18 @@ body {
   font-size: 1rem;
 }
 
+/* p.scores{
+    position:fixed;
+    bottom:450px;
+} */
 
 footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: #333;
-  color: white;
-  text-align: center;
-  padding: 1rem;
+    position: static; /* keep footer in normal flow */
+    width: 100%;
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 1rem;
 }
 
 /* --------- Media queries */
@@ -347,7 +350,7 @@ footer {
 
 @media (max-width: 320px) {
     .game-area {
-        height: 70vh;
+        min-height: 60vh; /* allow growth without forcing fixed height */
     }
 
     .controls-area {
