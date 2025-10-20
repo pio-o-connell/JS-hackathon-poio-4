@@ -2,15 +2,15 @@
 // Get the button elements and add event listeners to them
 
 document.addEventListener("DOMContentLoaded", function() {
-    let buttons = document.getElementsByTagName("button");
-
-    for (let button of buttons) {
+    // Only attach global listeners to mode buttons with data-type
+    const modeButtons = document.querySelectorAll('button[data-type]');
+    for (let button of modeButtons) {
         button.addEventListener("click", function() {
-            if (this.getAttribute("data-type") === "submit") {
+            const type = this.getAttribute("data-type");
+            if (type === "submit") {
                  checkAnswer();
-            } else {
-                let gameType = this.getAttribute("data-type");
-                runGame(gameType);
+            } else if (type) {
+                runGame(type);
             }
         });
     }
@@ -58,23 +58,51 @@ function runGame(gameType) {
  */
 function setupLeftPaneGameArea(gameType){
     const leftPane = document.getElementsByClassName('left-pane');
+ 
     const countries = document.querySelectorAll('.item-list .country');
+   
 
     leftPane[0].classList.remove('disabled');  // enable left pane
-    leftPane[0].classList.remove('transparent');
+    leftPane[0].classList.add('visible');
+  
     // build event listeners
     for (let country of countries) {
         country.addEventListener("click", function() {
         // Handle country selection
           //  alert(`You selected ${this.textContent} for game type: ${gameType}`);
           console.log(`You selected ${this.textContent} for game type: ${gameType}`);
+          setupRightPaneGameArea(country.textContent);
        //   document.documentElement.style.setProperty('--languages-color', this.textContent);
         });
     }
+    
+// Close the message and show the quiz
 
+};
 
+/**
+ * enable right pane of Game area
+ * Add event listeners to each button 
+ */
+function setupRightPaneGameArea(country) {
+    const rightPane = document.getElementsByClassName('right-pane');
+    rightPane[0].classList.remove('hidden');
+  // rightPane[0].classList.remove('visible');
+
+    // Enable any buttons and build event listeners
+    const question = document.getElementsByClassName("row-1");
+    question[0].textContent = `Quiz about ${country}`;
+    const buttons = rightPane[0].getElementsByTagName('button');
+    for (let button of buttons) {
+        // Visually and functionally enab
+        button.visible = true;
+        button.addEventListener("click", function() {
+            // Handle answer selection
+            console.log(`You selected ${this.textContent} for game type: ${country.textContent}`);
+            
+        });
+    }
 }
-
 /**
  * Checks the answer agaist the first element in
  * the returned calculateCorrectAnswer array
