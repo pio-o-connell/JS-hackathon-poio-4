@@ -1,5 +1,36 @@
 /* --------- Global style */
 
+/* CSS HEX */
+/* --blue: #0202f5;
+--persian-blue: #1915c9;
+--bilbao: #177e13;
+--mystic: #e8edf1;
+--buttercup: #f7a71c;
+--river-bed: #475562;
+--portage: #817ff4;
+--gray-chateau: #9da3ab;
+--fall-green: #e7ecbe; */
+
+:root {
+    --primary-font: "Inter", sans-serif;
+    --secondary-font: "Macondo", cursive;
+    --primary-color: #3a2620;
+    /* dark brown */
+    --secondary-color: #506D1B;
+    /* light brown */
+    --population-color: #177e13;
+
+    --currency-color: #0202f5;
+    /* blue */
+    --languages-color: #f7a71c;
+    /* light blue */
+
+    --highlight-footer-header-backgroundcolor: #4D4D4D;
+}
+
+
+
+
 body {
     background-color: white;
     font-family: "Raleway", sans-serif;
@@ -10,14 +41,32 @@ body {
     flex-direction: column;
 }
 
-.hidden{
-    display:none;
+
+.hidden {
+  visibility: hidden; /* Element is invisible but still takes up space */
+}
+
+.visible {
+  visibility: visible; /* Element is visible */
+}
+
+.transparent {
+  opacity: 0.3; /* 30% visible */
+}
+
+.opaque {
+  opacity: 1; /* fully visible */
 }
 
 .visible{
     display:block;
 }
 
+
+.disabled {
+  pointer-events: none;  /* No clicks or hovers */
+  opacity: 0.5;          /* Optional: make it look disabled */
+}
 /* --------- Heading */
 
 .heading {
@@ -57,7 +106,7 @@ body {
     padding: 0 15px;
 } */
 
-.left {
+.left-pane {
   flex: 1; /* takes 2 parts out of total 3 */
   background-color: lightblue;
 }

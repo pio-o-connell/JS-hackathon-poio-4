@@ -31,26 +31,45 @@ document.addEventListener("DOMContentLoaded", function() {
  * and after the user's answer has been processed
  */
 function runGame(gameType) {
-    // document.getElementById("answer-box").value = "";
-    // document.getElementById("answer-box").focus();
-    // Creates two random numbers between 1 and 25
-    // let num1 = Math.floor(Math.random() * 25) + 1;
-    // let num2 = Math.floor(Math.random() * 25) + 1;
+    const countries = document.querySelectorAll('.item-list .country');
 
-    if (gameType === "population") {
-        displayAdditionQuestion(num1, num2);
-    } else if (gameType === "currency") {
-        displayMultiplyQuestion(num1, num2);
-    } 
-    // else if (gameType === "subtract" ) {
-    //     displaySubtractQuestion(num1, num2);
-    // } 
-    else if (gameType === "languages"){
-	    displayDivisionQuestion(num1,num2);
-    }
-    else {
-        alert(`Unknown game type: ${gameType}`);
-        throw `Unknown game type: ${gameType}. Aborting!`;
+        for (let country of countries) {
+            switch(gameType){
+                case "population":
+                    country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--population-color');
+                    break;
+                case "currency":
+                    country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--currency-color');
+                    break;
+                case "languages":
+                    country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--languages-color');
+                    break;
+                default:
+                    alert(`Unknown game type: ${gameType}`);
+                    throw `Unknown game type: ${gameType}. Aborting!`;
+            }
+        }  
+    setupLeftPaneGameArea(gameType);
+}
+
+/**
+ * enable left pane of Game area
+ * Add event listeners to each button 
+ */
+function setupLeftPaneGameArea(gameType){
+    const leftPane = document.getElementsByClassName('left-pane');
+    const countries = document.querySelectorAll('.item-list .country');
+
+    leftPane[0].classList.remove('disabled');  // enable left pane
+    leftPane[0].classList.remove('transparent');
+    // build event listeners
+    for (let country of countries) {
+        country.addEventListener("click", function() {
+        // Handle country selection
+          //  alert(`You selected ${this.textContent} for game type: ${gameType}`);
+          console.log(`You selected ${this.textContent} for game type: ${gameType}`);
+       //   document.documentElement.style.setProperty('--languages-color', this.textContent);
+        });
     }
 
 
