@@ -7,7 +7,7 @@
 const ENABLE_NINJA_API = true; // Enable direct Ninja API calls from the browser
 const NINJA_API_KEY = 'yMeX7KaoDI7emt/c2uGp8w==7cVk5dAOuVFMhPIN';
 const NINJA_API_BASE_URL = 'https://api.api-ninjas.com/v1';
-const NINJA_RATE_DELAY_MS = 1100; // ~1 req/sec to respect free tier
+const NINJA_RATE_DELAY_MS = 2000; // ~1 req/sec to respect free tier
 const NINJA_MAX_INITIAL = 10; // smaller subset for faster first load
 
 
@@ -78,11 +78,18 @@ class QuizEngine {
 
         // Shuffle the country list before slicing
         const shuffledCountryList = this.shuffleArray(countryList);
-        for (const country of shuffledCountryList.slice(0, NINJA_MAX_INITIAL)) {
+        for (const [index, country] of shuffledCountryList.slice(0, NINJA_MAX_INITIAL).entries()) {
           try {
             const data = await fetchCountryData(country);
             this.countries.push(data);
             console.log(`✅ Fetched data for ${country}`);
+
+            // Update the corresponding list item as data is fetched
+            const listItem = document.querySelector(`.item-list .country:nth-child(${index + 1})`);
+            if (listItem) {
+              listItem.textContent = `${country}` || 'Unknown';
+            }
+
             await new Promise(resolve => setTimeout(resolve, NINJA_RATE_DELAY_MS)); // Rate limiting
           } catch (err) {
             console.error(`❌ Error fetching data for ${country}:`, err);
@@ -137,6 +144,17 @@ class QuizEngine {
     return shuffled;
   }
 
+  /**
+   *Change the text on buttons in left-pane
+   */
+  updateButtonLabels() {
+    const list = document.querySelectorAll('item-list');
+    list.forEach((item, index) => {
+      item.textContent = `Option ${index + 1}`;
+    });
+  }
+
+
 } // end class QuizEngine
 
 
@@ -152,6 +170,16 @@ quiz.init().then(() => {
 
    // Show a preview of what got loaded
    console.log('🧩 Sample countries:', quiz.countries.slice(0, 10));
+
+//    const listItems = document.querySelectorAll('.item-list .country');
+
+//    listItems.forEach((item, index) => {
+//      if (quiz.countries[index] && quiz.countries[index].name) {
+//        item.textContent = quiz.countries[index].name;
+//      } else {
+//        item.textContent = 'Unknown';
+//      }
+//    });
 
 //   // Test shuffleArray directly
 //   const sample = ['A', 'B', 'C', 'D', 'E'];
