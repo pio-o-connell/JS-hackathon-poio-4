@@ -87,12 +87,14 @@ function setupLeftPaneGameArea(gameType) {
 function setupRightPaneGameArea(country) {
     const rightPane = document.getElementsByClassName('right-pane');
     const pane = rightPane[0];
+    // Make the right pane visible and interactive
     pane.classList.remove('hidden');
-    const btn = document.getElementById('showOverlayBtn');
+    pane.classList.remove('disabled');
+    pane.classList.remove('transparent');
+    pane.setAttribute('aria-hidden', 'false');
+    
 
-    if (btn) {
-        btn.addEventListener('click', () => beginQuiz(country), { once: true });
-    }
+   
 
 
     // rightPane[0].classList.remove('visible');
@@ -101,6 +103,25 @@ function setupRightPaneGameArea(country) {
     const question = document.getElementsByClassName("row-1");
     if (question && question[0]) {
         question[0].textContent = `Quiz with ${country} and 9 others`;
+    }
+
+    // Ensure quiz body and row-1 are visible
+    const quizBody = pane.querySelector('.quiz__body');
+    if (quizBody) {
+        quizBody.classList.remove('hidden');
+        quizBody.setAttribute('aria-hidden', 'false');
+    }
+    const row1 = pane.querySelector('.row-1');
+    if (row1) {
+        row1.classList.remove('hidden');
+        row1.setAttribute('aria-hidden', 'false');
+    }
+    const startBtn = document.getElementById('showOverlayBtn');
+    if (startBtn) {
+        startBtn.classList.remove('hidden');
+        startBtn.removeAttribute('disabled');
+        startBtn.style.visibility = 'visible';
+        startBtn.setAttribute('aria-hidden', 'false');
     }
 
     // Hide rows 2, 3, and 4 initially
@@ -115,10 +136,17 @@ function setupRightPaneGameArea(country) {
         button.visible = true;
         button.addEventListener("click", function () {
             // Handle answer selection
-            console.log(`You selected ${this.textContent} for game type: ${country.textContent}`);
+            console.log(`You selected ${this.textContent} for game type: ${country}`);
 
         });
     }
+
+    const btn = document.getElementById('showOverlayBtn');
+   if (btn) {
+        btn.addEventListener('click', () => beginQuiz(country), { once: true });
+    }
+
+
 }
 
 /**
@@ -141,13 +169,15 @@ function beginQuiz(country) {
     }
 
     // After a short delay (simulate download), hide overlay and reveal quiz rows
-    setTimeout(() => completeQuizLoading(), 1500);
+    setTimeout(() => completeQuizLoading(), 5000);
 }
 
 /**
  * Hide the overlay and reveal rows 2-4 in the right pane
  */
 function completeQuizLoading() {
+
+    
     const pane = document.querySelector('.right-pane');
     if (!pane) return;
     const overlay = pane.querySelector('.overlay');

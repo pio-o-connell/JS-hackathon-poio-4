@@ -131,7 +131,8 @@ body {
 }
 
 /* Overlay setup */
-.overlay {    
+/*
+/* .overlay {     */ /*
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
@@ -144,10 +145,10 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.6s ease; /* smooth fade in/out */
-}
 
-/* fade in/out both overlay and its children */
-.overlay > * {   
+
+/* fade in/out both overlay and its children 
+.overlay > 
   opacity: 0;
   transform: scale(0.9);
   transition: opacity 0.6s ease, transform 0.6s ease;
@@ -164,7 +165,7 @@ body {
 }
 
 /* Spinner */
-.spinner {
+/*.spinner {
   width: 50px;
   height: 50px;
   border: 6px solid rgba(255, 255, 255, 0.3);
@@ -180,13 +181,14 @@ body {
 }
 
 /* Text styling */
+/*
 .overlay-text {
   font-size: 1.2rem;
   font-weight: 500;
 }
 
 
-
+*/
 
 
 
