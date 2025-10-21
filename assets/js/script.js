@@ -32,17 +32,25 @@ document.addEventListener("DOMContentLoaded", function () {
  */
 function runGame(gameType) {
     const countries = document.querySelectorAll('.item-list .country');
+    const message = document.querySelector('.message-info-disabled');
 
     for (let country of countries) {
         switch (gameType) {
             case "population":
                 country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--population-color');
+                message.textContent = "Population quiz selected. Choose a country.";
+                message.style.color = getComputedStyle(document.documentElement).getPropertyValue('--population-color');
+
                 break;
             case "currency":
                 country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--currency-color');
+                message.textContent = "Currency quiz selected. Choose a country.";
+                message.style.color = getComputedStyle(document.documentElement).getPropertyValue('--currency-color');
                 break;
             case "languages":
                 country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--languages-color');
+                message.textContent = "Languages quiz selected. Choose a country.";
+                message.style.color = getComputedStyle(document.documentElement).getPropertyValue('--languages-color');
                 break;
             default:
                 alert(`Unknown game type: ${gameType}`);
@@ -71,7 +79,7 @@ function setupLeftPaneGameArea(gameType) {
             // Handle country selection
             //  alert(`You selected ${this.textContent} for game type: ${gameType}`);
             console.log(`You selected ${this.textContent} for game type: ${gameType}`);
-            setupRightPaneGameArea(country.textContent);
+            setupRightPaneGameArea(country.textContent, gameType);
             //   document.documentElement.style.setProperty('--languages-color', this.textContent);
         });
     }
@@ -84,7 +92,7 @@ function setupLeftPaneGameArea(gameType) {
  * enable right pane of Game area
  * Add event listeners to each button 
  */
-function setupRightPaneGameArea(country) {
+function setupRightPaneGameArea(country, gameType) {
     const rightPane = document.getElementsByClassName('right-pane');
     const pane = rightPane[0];
     // Make the right pane visible and interactive
@@ -102,7 +110,21 @@ function setupRightPaneGameArea(country) {
     // Enable any buttons and build event listeners
     const question = document.getElementsByClassName("row-1");
     if (question && question[0]) {
-        question[0].textContent = `Quiz with ${country} and 9 others`;
+        switch (gameType) {
+            case "population":
+                question[0].textContent = `Quiz on Population of ${country} and 9 others`;
+                break;
+            case "currency":
+                question[0].textContent = `Quiz on Currency with ${country} and 9 others`;
+                break;
+            case "languages":
+                question[0].textContent = `Quiz on Languages with ${country} and 9 others`;
+                break;
+            default:
+                alert(`Unknown game type: ${gameType}`);
+                throw `Unknown game type: ${gameType}. Aborting!`;
+        }
+
     }
 
     // Ensure quiz body and row-1 are visible
