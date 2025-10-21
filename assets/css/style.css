@@ -96,7 +96,7 @@ body {
     padding: 1%;
 }
 
-.question-area {
+.question-area {    /*flex container */
     display: flex; 
     width: 80%;
     font-size: 1rem;
@@ -108,15 +108,94 @@ body {
     padding: 0 15px;
 } */
 
-.left-pane {
+.left-pane {          /*flex-1 container */
   flex: 1; /* takes 2 parts out of total 3 */
   background-color: lightblue;
+
+
+  display: flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:bold;
 }
 
-.right-pane {
+.right-pane {        /*flex-2 container */
   flex: 2; /* takes 1 part out of total 3 */
   background-color: lightcoral;
+
+  color:white;
+  display: flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
 }
+
+/* Overlay setup */
+.overlay {    
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease; /* smooth fade in/out */
+}
+
+/* fade in/out both overlay and its children */
+.overlay > * {   
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.right-pane.show-overlay .overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.right-pane.show-overlay .overlay > * {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Spinner */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Text styling */
+.overlay-text {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+
+
+
+
+
+/* -------------------------------------------------------*/
+
+
+
+
+
 
 .item-list {
   list-style: none;

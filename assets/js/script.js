@@ -1,14 +1,14 @@
 // Wait for the DOM to finish loading before running the game
 // Get the button elements and add event listeners to them
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // Only attach global listeners to mode buttons with data-type
     const modeButtons = document.querySelectorAll('button[data-type]');
     for (let button of modeButtons) {
-        button.addEventListener("click", function() {
+        button.addEventListener("click", function () {
             const type = this.getAttribute("data-type");
             if (type === "submit") {
-                 checkAnswer();
+                checkAnswer();
             } else if (type) {
                 runGame(type);
             }
@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", function() {
     //         checkAnswer();
     //     }
     // });
-    
-    
+
+
     // runGame("addition");
 
 });
@@ -33,22 +33,22 @@ document.addEventListener("DOMContentLoaded", function() {
 function runGame(gameType) {
     const countries = document.querySelectorAll('.item-list .country');
 
-        for (let country of countries) {
-            switch(gameType){
-                case "population":
-                    country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--population-color');
-                    break;
-                case "currency":
-                    country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--currency-color');
-                    break;
-                case "languages":
-                    country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--languages-color');
-                    break;
-                default:
-                    alert(`Unknown game type: ${gameType}`);
-                    throw `Unknown game type: ${gameType}. Aborting!`;
-            }
-        }  
+    for (let country of countries) {
+        switch (gameType) {
+            case "population":
+                country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--population-color');
+                break;
+            case "currency":
+                country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--currency-color');
+                break;
+            case "languages":
+                country.style.color = getComputedStyle(document.documentElement).getPropertyValue('--languages-color');
+                break;
+            default:
+                alert(`Unknown game type: ${gameType}`);
+                throw `Unknown game type: ${gameType}. Aborting!`;
+        }
+    }
     setupLeftPaneGameArea(gameType);
 }
 
@@ -56,27 +56,27 @@ function runGame(gameType) {
  * enable left pane of Game area
  * Add event listeners to each button 
  */
-function setupLeftPaneGameArea(gameType){
+function setupLeftPaneGameArea(gameType) {
     const leftPane = document.getElementsByClassName('left-pane');
- 
+
     const countries = document.querySelectorAll('.item-list .country');
-   
+
 
     leftPane[0].classList.remove('disabled');  // enable left pane
     leftPane[0].classList.add('visible');
-  
+
     // build event listeners
     for (let country of countries) {
-        country.addEventListener("click", function() {
-        // Handle country selection
-          //  alert(`You selected ${this.textContent} for game type: ${gameType}`);
-          console.log(`You selected ${this.textContent} for game type: ${gameType}`);
-          setupRightPaneGameArea(country.textContent);
-       //   document.documentElement.style.setProperty('--languages-color', this.textContent);
+        country.addEventListener("click", function () {
+            // Handle country selection
+            //  alert(`You selected ${this.textContent} for game type: ${gameType}`);
+            console.log(`You selected ${this.textContent} for game type: ${gameType}`);
+            setupRightPaneGameArea(country.textContent);
+            //   document.documentElement.style.setProperty('--languages-color', this.textContent);
         });
     }
-    
-// Close the message and show the quiz
+
+    // Close the message and show the quiz
 
 };
 
@@ -86,23 +86,81 @@ function setupLeftPaneGameArea(gameType){
  */
 function setupRightPaneGameArea(country) {
     const rightPane = document.getElementsByClassName('right-pane');
-    rightPane[0].classList.remove('hidden');
-  // rightPane[0].classList.remove('visible');
+    const pane = rightPane[0];
+    pane.classList.remove('hidden');
+    const btn = document.getElementById('showOverlayBtn');
+
+    if (btn) {
+        btn.addEventListener('click', () => beginQuiz(country), { once: true });
+    }
+
+
+    // rightPane[0].classList.remove('visible');
 
     // Enable any buttons and build event listeners
     const question = document.getElementsByClassName("row-1");
-    question[0].textContent = `Quiz with ${country} and 9 others`;
+    if (question && question[0]) {
+        question[0].textContent = `Quiz with ${country} and 9 others`;
+    }
+
+    // Hide rows 2, 3, and 4 initially
+    const rowsToHide = pane.querySelectorAll('.row-2, .row-3, .row-4');
+    rowsToHide.forEach(row => {
+        row.classList.add('hidden');
+        row.setAttribute('aria-hidden', 'true');
+    });
     const buttons = rightPane[0].getElementsByTagName('button');
     for (let button of buttons) {
         // Visually and functionally enab
         button.visible = true;
-        button.addEventListener("click", function() {
+        button.addEventListener("click", function () {
             // Handle answer selection
             console.log(`You selected ${this.textContent} for game type: ${country.textContent}`);
-            
+
         });
     }
 }
+
+/**
+ * Begin the quiz: show overlay immediately, then hide after a delay
+ */
+function beginQuiz(country) {
+    const pane = document.querySelector('.right-pane');
+    const overlay = pane ? pane.querySelector('.overlay') : null;
+    if (!overlay) {
+        console.warn('Overlay element not found');
+        return;
+    }
+    // Show overlay using CSS .overlay.show rules
+    overlay.classList.add('show');
+
+    // Update message to a simple downloading status
+    const msg = overlay.querySelector('.overlay-text');
+    if (msg) {
+        msg.textContent = 'Downloading quiz...';
+    }
+
+    // After a short delay (simulate download), hide overlay and reveal quiz rows
+    setTimeout(() => completeQuizLoading(), 1500);
+}
+
+/**
+ * Hide the overlay and reveal rows 2-4 in the right pane
+ */
+function completeQuizLoading() {
+    const pane = document.querySelector('.right-pane');
+    if (!pane) return;
+    const overlay = pane.querySelector('.overlay');
+    if (overlay) overlay.classList.remove('show');
+
+    const rowsToShow = pane.querySelectorAll('.row-2, .row-3, .row-4');
+    rowsToShow.forEach(row => {
+        row.classList.remove('hidden');
+        row.setAttribute('aria-hidden', 'false');
+    });
+}
+
+
 /**
  * Checks the answer agaist the first element in
  * the returned calculateCorrectAnswer array
@@ -142,8 +200,8 @@ function calculateCorrectAnswer() {
         return [operand1 * operand2, "multiply"];
     } else if (operator === "-") {
         return [operand1 - operand2, "subtract"];
-    } else if (operator ==="/") {
-		return [operand1 / operand2, "division"];
+    } else if (operator === "/") {
+        return [operand1 / operand2, "division"];
     } else {
         alert(`Unimplemented operator ${operator}`);
         throw `Unimplemented operator ${operator}. Aborting!`;
@@ -168,7 +226,7 @@ function incrementWrongAnswer() {
 
     let oldScore = parseInt(document.getElementById("incorrect").innerText);
     document.getElementById("incorrect").innerText = ++oldScore;
-    
+
 }
 
 function displayAdditionQuestion(operand1, operand2) {
@@ -176,7 +234,7 @@ function displayAdditionQuestion(operand1, operand2) {
     document.getElementById('operand1').textContent = operand1;
     document.getElementById('operand2').textContent = operand2;
     document.getElementById('operator').textContent = "+";
-    
+
 }
 
 function displaySubtractQuestion(operand1, operand2) {
