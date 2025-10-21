@@ -76,7 +76,9 @@ class QuizEngine {
           return response.json();
         };
 
-        for (const country of countryList.slice(0, NINJA_MAX_INITIAL)) {
+        // Shuffle the country list before slicing
+        const shuffledCountryList = this.shuffleArray(countryList);
+        for (const country of shuffledCountryList.slice(0, NINJA_MAX_INITIAL)) {
           try {
             const data = await fetchCountryData(country);
             this.countries.push(data);
@@ -122,20 +124,20 @@ class QuizEngine {
     })).filter(c => c.population > 0);
   }
 
-} // end class QuizEngine
 
    /**
    * Shuffle array (Fisher-Yates)
    */
-//   shuffleArray(array) {
-//     const shuffled = [...array];
-//     for (let i = shuffled.length - 1; i > 0; i--) {
-//       const j = Math.floor(Math.random() * (i + 1));
-//       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-//     }
-//     return shuffled;
-//   }
+  shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
 
+} // end class QuizEngine
 
 
 
