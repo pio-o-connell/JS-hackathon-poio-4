@@ -1,6 +1,9 @@
 // Wait for the DOM to finish loading before running the game
 // Get the button elements and add event listeners to them
 
+
+//import { QuizEngine, value } from './quiz.js';
+
 document.addEventListener("DOMContentLoaded", function () {
     // Only attach global listeners to mode buttons with data-type
     const modeButtons = document.querySelectorAll('button[data-type]');
@@ -79,6 +82,7 @@ function setupLeftPaneGameArea(gameType) {
             // Handle country selection
             //  alert(`You selected ${this.textContent} for game type: ${gameType}`);
             console.log(`You selected ${this.textContent} for game type: ${gameType}`);
+            document.querySelector('.message-info-disabled').textContent = `You selected ${this.textContent} for for game type: ${gameType}. Preparing quiz...`;
             setupRightPaneGameArea(country.textContent, gameType);
             //   document.documentElement.style.setProperty('--languages-color', this.textContent);
         });
@@ -191,7 +195,7 @@ function beginQuiz(country) {
     }
 
     // After a short delay (simulate download), hide overlay and reveal quiz rows
-    setTimeout(() => completeQuizLoading(), 5000);
+    setTimeout(() => completeQuizLoading(), 1000);
 }
 
 /**
@@ -205,12 +209,63 @@ function completeQuizLoading() {
     const overlay = pane.querySelector('.overlay');
     if (overlay) overlay.classList.remove('show');
 
-    const rowsToShow = pane.querySelectorAll('.row-2, .row-3, .row-4');
-    rowsToShow.forEach(row => {
-        row.classList.remove('hidden');
-        row.setAttribute('aria-hidden', 'false');
-    });
+    // const rowsToShow = pane.querySelectorAll('.row-2, .row-3, .row-4');
+    // rowsToShow.forEach(row => {
+    //     row.classList.remove('hidden');
+    //     row.setAttribute('aria-hidden', 'false');
+    // });
+
+     setTimeout(() => {
+        GenerateQuizQuestions();
+    }, 5000);
 }
+
+
+/**
+ * Checks the answer agaist the first element in
+ * the returned calculateCorrectAnswer array
+ */
+
+
+/*
+function PrepareQuizQuestions() {
+   // const quiz = new QuizEngine();
+    // console.log(quiz);
+    // Try to read the globally-exposed quiz instance from quiz.js
+    const quizInstance = window.quiz;
+    if (!quizInstance) {
+        console.warn('Quiz instance not available on window.quiz yet — waiting for quiz:ready');
+        document.addEventListener('quiz:ready', function onReady(e) {
+            document.removeEventListener('quiz:ready', onReady);
+            PrepareQuizQuestions();
+        }, { once: true });
+        return;
+    }
+    
+    // Attempt to retrieve the first loaded country's population (or the selected country)
+    const countries = quizInstance.countries || [];
+    if (countries.length === 0) {
+        console.warn('No countries loaded in quiz instance yet — waiting for quiz:ready');
+        document.addEventListener('quiz:ready', function onReady(e) {
+            document.removeEventListener('quiz:ready', onReady);
+            PrepareQuizQuestions();
+        }, { once: true });
+        return;
+    }
+    
+    // If you want the selected country, you could store that selection on the quiz instance
+    // For now, log the population of the first country in the loaded list
+    const first = countries[0];
+    const population = first.population ?? first.popularity ?? null;
+    if (population != null) {
+        console.log(`Population for ${first.name}: ${population}`);
+    } else {
+        console.log(`Population not available for ${first.name}`);
+        console.warn(`Population not available for ${first.name}`);
+    }
+}
+
+
 
 
 /**
@@ -219,19 +274,19 @@ function completeQuizLoading() {
  */
 function checkAnswer() {
 
-    let userAnswer = parseInt(document.getElementById("answer-box").value);
-    let calculatedAnswer = calculateCorrectAnswer();
-    let isCorrect = userAnswer === calculatedAnswer[0];
+    // let userAnswer = parseInt(document.getElementById("answer-box").value);
+    // let calculatedAnswer = calculateCorrectAnswer();
+    // let isCorrect = userAnswer === calculatedAnswer[0];
 
-    if (isCorrect) {
-        // alert("Hey! You got it right! :D"); 
-        incrementScore();
-    } else {
-        // alert(`Awwww.... you answered ${userAnswer}. The correct answer was ${calculatedAnswer[0]}!`);
-        incrementWrongAnswer();
-    }
+    // if (isCorrect) {
+    //     // alert("Hey! You got it right! :D"); 
+    //     incrementScore();
+    // } else {
+    //     // alert(`Awwww.... you answered ${userAnswer}. The correct answer was ${calculatedAnswer[0]}!`);
+    //     incrementWrongAnswer();
+    // }
 
-    runGame(calculatedAnswer[1]);
+    // runGame(calculatedAnswer[1]);
 
 }
 
@@ -242,22 +297,22 @@ function checkAnswer() {
  */
 function calculateCorrectAnswer() {
 
-    let operand1 = parseInt(document.getElementById('operand1').innerText);
-    let operand2 = parseInt(document.getElementById('operand2').innerText);
-    let operator = document.getElementById("operator").innerText;
+    // let operand1 = parseInt(document.getElementById('operand1').innerText);
+    // let operand2 = parseInt(document.getElementById('operand2').innerText);
+    // let operator = document.getElementById("operator").innerText;
 
-    if (operator === "+") {
-        return [operand1 + operand2, "addition"];
-    } else if (operator === "x") {
-        return [operand1 * operand2, "multiply"];
-    } else if (operator === "-") {
-        return [operand1 - operand2, "subtract"];
-    } else if (operator === "/") {
-        return [operand1 / operand2, "division"];
-    } else {
-        alert(`Unimplemented operator ${operator}`);
-        throw `Unimplemented operator ${operator}. Aborting!`;
-    }
+    // if (operator === "+") {
+    //     return [operand1 + operand2, "addition"];
+    // } else if (operator === "x") {
+    //     return [operand1 * operand2, "multiply"];
+    // } else if (operator === "-") {
+    //     return [operand1 - operand2, "subtract"];
+    // } else if (operator === "/") {
+    //     return [operand1 / operand2, "division"];
+    // } else {
+    //     alert(`Unimplemented operator ${operator}`);
+    //     throw `Unimplemented operator ${operator}. Aborting!`;
+    // }
 
 }
 
@@ -266,8 +321,8 @@ function calculateCorrectAnswer() {
  */
 function incrementScore() {
 
-    let oldScore = parseInt(document.getElementById("score").innerText);
-    document.getElementById("score").innerText = ++oldScore;
+    // let oldScore = parseInt(document.getElementById("score").innerText);
+    // document.getElementById("score").innerText = ++oldScore;
 
 }
 
@@ -276,38 +331,38 @@ function incrementScore() {
  */
 function incrementWrongAnswer() {
 
-    let oldScore = parseInt(document.getElementById("incorrect").innerText);
-    document.getElementById("incorrect").innerText = ++oldScore;
+    // let oldScore = parseInt(document.getElementById("incorrect").innerText);
+    // document.getElementById("incorrect").innerText = ++oldScore;
 
 }
 
 function displayAdditionQuestion(operand1, operand2) {
 
-    document.getElementById('operand1').textContent = operand1;
-    document.getElementById('operand2').textContent = operand2;
-    document.getElementById('operator').textContent = "+";
+    // document.getElementById('operand1').textContent = operand1;
+    // document.getElementById('operand2').textContent = operand2;
+    // document.getElementById('operator').textContent = "+";
 
 }
 
 function displaySubtractQuestion(operand1, operand2) {
 
-    document.getElementById("operand1").textContent = operand1 > operand2 ? operand1 : operand2;
-    document.getElementById("operand2").textContent = operand1 > operand2 ? operand2 : operand1;
-    document.getElementById('operator').textContent = "-";
+    // document.getElementById("operand1").textContent = operand1 > operand2 ? operand1 : operand2;
+    // document.getElementById("operand2").textContent = operand1 > operand2 ? operand2 : operand1;
+    // document.getElementById('operator').textContent = "-";
 
 }
 
 function displayMultiplyQuestion(operand1, operand2) {
 
-    document.getElementById('operand1').textContent = operand1;
-    document.getElementById('operand2').textContent = operand2;
-    document.getElementById('operator').textContent = "x";
+    // document.getElementById('operand1').textContent = operand1;
+    // document.getElementById('operand2').textContent = operand2;
+    // document.getElementById('operator').textContent = "x";
 
 }
 
 function displayDivisionQuestion(operand1, operand2) {
-    operand1 = operand1 * operand2;
-    document.getElementById("operand1").textContent = operand1;
-    document.getElementById("operand2").textContent = operand2;
-    document.getElementById("operator").textContent = "/";
+//     operand1 = operand1 * operand2;
+//     document.getElementById("operand1").textContent = operand1;
+//     document.getElementById("operand2").textContent = operand2;
+//     document.getElementById("operator").textContent = "/";
 }

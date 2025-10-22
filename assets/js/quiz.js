@@ -7,13 +7,14 @@
 const ENABLE_NINJA_API = true; // Enable direct Ninja API calls from the browser
 const NINJA_API_KEY = 'yMeX7KaoDI7emt/c2uGp8w==7cVk5dAOuVFMhPIN';
 const NINJA_API_BASE_URL = 'https://api.api-ninjas.com/v1';
-const NINJA_RATE_DELAY_MS = 2000; // ~1 req/sec to respect free tier
+const NINJA_RATE_DELAY_MS = 200; // ~1 req/sec to respect free tier
 const NINJA_MAX_INITIAL = 10; // smaller subset for faster first load
 
-
-class QuizEngine {
+//Export this class
+ class QuizEngine { 
   constructor() {
     this.countries = [];
+
     this.extendedData = [];
     this.currentQuestion = null;
     this.score = 0;
@@ -154,13 +155,134 @@ class QuizEngine {
     });
   }
 
+  /**
+   * Create the a multiple choice question
+   */
+// /-- generateQuestionsandAnswers(){                                                                  ----
+//  /()   for (i=0;i< NINJA_MAX_INITIAL;i++){
+      // generateMultipleChoiceQuestion('population', this.countries);
 
-} // end class QuizEngine
+    // }
+  // }
+   /**
+   * Generate a multiple choice question
+  //  */
+ /* generateMultipleChoiceQuestion(type, pool) {/*
+    const country = pool[Math.floor(Math.random() * pool.length)];
+    let question, correctAnswer, options, explanation, media;
+
+    switch (type) {
+      case 'population':
+        question = `What is the approximate population of ${country.name}?`;
+        correctAnswer = this.formatPopulation(country.population);
+        options = this.generatePopulationOptions(country.population, pool);
+        explanation = `${country.name} has a population of approximately ${correctAnswer}.`;
+        break;
+
+      // case 'area':
+      //   question = `What is the total land area of ${country.name} in square kilometers?`;
+      //   correctAnswer = this.formatArea(country.area);
+      //   options = this.generateAreaOptions(country.area, pool);
+      //   explanation = `${country.name} has a total area of ${correctAnswer}.`;
+      //   break;
+
+      // case 'gdp':
+        question = `What is the approximate GDP of ${country.name}?`;
+        correctAnswer = this.formatGDP(country.population * 15000); // Rough estimate based on population
+        options = this.generateGDPOptions(country.population * 15000, pool);
+        explanation = `${country.name} has an estimated GDP of approximately ${correctAnswer}.`;
+        break;
+
+      // case 'capital':
+      //   question = `What is the capital city of ${country.name}?`;
+      //   correctAnswer = country.capital;
+      //   options = this.generateCapitalOptions(country, pool);
+      //   explanation = `The capital of ${country.name} is ${correctAnswer}.`;
+      //   break;
+
+      case 'currency':
+        question = `What currency is used in ${country.name}?`;
+        correctAnswer = country.currencies[0] || 'Unknown';
+        options = this.generateCurrencyOptions(country, pool);
+        explanation = `${country.name} uses ${correctAnswer}.`;
+        break;
+
+      case 'languages':
+        question = `Which languages are spoken in ${country.name}?`;
+        correctAnswer = country.languages[0] || 'Unknown';
+        options = this.generateLanguageOptions(country, pool);
+        explanation = `${correctAnswer} is one of the official languages spoken in ${country.name}.`;
+        break;
+
+    //   case 'timezone':
+    //     question = `What is the time zone of ${country.name}?`;
+    //     correctAnswer = country.timezones[0];
+    //     options = this.generateTimezoneOptions(country, pool);
+    //     explanation = `The time zone of ${country.name} is ${correctAnswer}.`;
+    //     break;
+
+    //   case 'flag':
+    //     question = `What does the flag of ${country.name} look like?`;
+    //     correctAnswer = country.flag;
+    //     options = this.generateFlagOptions(country, pool);
+    //     explanation = `This is what the flag of ${country.name} looks like.`;
+    //     media = { type: 'flags', options: options };
+    //     break;
+  /*   } 
+
+    return {
+      type,
+      question,
+      correctAnswer,
+      options: this.shuffleArray(options),
+      explanation,
+      media,
+      country: country.name
+    };
+  }
+
+  generateCurrencyOptions(country, pool) {
+    const options = [country.currencies[0]];
+    const otherCurrencies = pool
+      .filter(c => c.name !== country.name && c.currencies.length > 0)
+      .flatMap(c => c.currencies);
+
+    while (options.length < 4 && otherCurrencies.length > 0) {
+      const idx = Math.floor(Math.random() * otherCurrencies.length);
+      const currency = otherCurrencies.splice(idx, 1)[0];
+      if (!options.includes(currency)) {
+        options.push(currency);
+      }
+    }
+return options;
+  }
+
+   /**
+   * Generate distractor options for population questions
+   */
+ /* generatePopulationOptions(correctPop, pool) {
+    const options = [this.formatPopulation(correctPop)];
+    const multipliers = this.difficulty === 'easy' ? [0.5, 2, 5] : 
+                        this.difficulty === 'medium' ? [0.7, 1.5, 3] : 
+                        [0.85, 1.15, 1.4];
+
+    multipliers.forEach(mult => {
+      options.push(this.formatPopulation(Math.floor(correctPop * mult)));
+    });
+
+    return options;
+  } */
+
+
+
+ } // end class QuizEngine
 
 
 
 // Create a new quiz instance
 const quiz = new QuizEngine();
+// Expose the instance globally so other classic scripts can access it
+window.quiz = quiz;
 
 // Initialize the quiz (fetch data, shuffle, etc.)
 quiz.init().then(() => {
@@ -191,8 +313,37 @@ quiz.init().then(() => {
   console.error('💥 Initialization failed:', err);
 });
 
+// Notify other scripts that the quiz has finished initializing (include how many countries were loaded)
+try {
+  document.dispatchEvent(new CustomEvent('quiz:ready', { detail: { loaded: quiz.countries ? quiz.countries.length : 0 } }));
+} catch (e) {
+  // If dispatching fails for any reason, ignore — other scripts should still check window.quiz
+}
+
+// Optionally generate initial questions (safe to call; will use loaded countries)
+
+// function blockDelay(ms) {
+//   const start = Date.now();
+//   while (Date.now() - start < ms) {
+//     // do nothing, just wait
+//   }
+// }
+
+//  blockDelay(5000); // blocks for 5 seconds
+
+// try {
+//   if (typeof quiz.generateQuestionsandAnswers === 'function') {
+//     quiz.generateQuestionsandAnswers();
+//   }
+// } catch (e) {
+//   console.warn('Could not generate initial questions immediately:', e);
+// }
 
 
 
 // Export for use in quiz.js
-// window.QuizEngine = QuizEngine;
+ window.QuizEngine = QuizEngine;
+ window.myvalue=42;
+
+
+// export const value = 42;
