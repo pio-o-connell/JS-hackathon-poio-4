@@ -122,6 +122,7 @@ function runGame(gameType) {
 
     countries.forEach(country => {
         country.style.color = colorValue;
+        country.style.borderColor = colorValue;
         country.classList.remove('selected-country');
     });
 
