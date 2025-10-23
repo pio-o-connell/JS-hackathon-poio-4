@@ -3,12 +3,9 @@
  * Handles data fetching, question generation, difficulty levels, and scoring
  */
 
-// API Configuration
-const ENABLE_NINJA_API = true; // Enable direct Ninja API calls from the browser
-const NINJA_API_KEY = 'yMeX7KaoDI7emt/c2uGp8w==7cVk5dAOuVFMhPIN';
-const NINJA_API_BASE_URL = 'https://api.api-ninjas.com/v1';
-const NINJA_RATE_DELAY_MS = 200; // ~1 req/sec to respect free tier
-const NINJA_MAX_INITIAL = 10; // smaller subset for faster first load
+// REST Countries configuration
+const REST_COUNTRIES_API_URL = 'https://restcountries.com/v3.1/all?fields=name,population,capital,cca3,region,languages,currencies,timezones,area,flags';
+const REST_COUNTRIES_SAMPLE_SIZE = 10;
 
 //Export this class
  class QuizEngine { 
@@ -24,7 +21,7 @@ const NINJA_MAX_INITIAL = 10; // smaller subset for faster first load
     this.totalQuestions = 10;
     this.difficulty = 'easy';
     this.answeredCurrentQuestion = false;
-    this.apiKey = NINJA_API_KEY;
+  this.countryPool = [];
     this.difficultySettings = {
       easy: { countries: 30, popularOnly: true },
       medium: { countries: 100, popularOnly: false },
@@ -40,63 +37,9 @@ const NINJA_MAX_INITIAL = 10; // smaller subset for faster first load
     try {
       console.log('🚀 Initializing quiz...');
 
-      // If Ninja API is disabled or no key, use REST Countries directly
-      if (!ENABLE_NINJA_API || !this.apiKey) {
-        await this.loadFromRestCountries();
-      } else {
-        // List of countries to fetch from Ninja API (we will pick a safe subset)
-        const countryList = [
-        'United States', 'China', 'India', 'Brazil', 'Russia', 'Japan', 'Germany', 'United Kingdom',
-        'France', 'Italy', 'Canada', 'South Korea', 'Spain', 'Australia', 'Mexico', 'Indonesia',
-        'Netherlands', 'Saudi Arabia', 'Turkey', 'Switzerland', 'Poland', 'Belgium', 'Sweden',
-        'Argentina', 'Norway', 'Austria', 'United Arab Emirates', 'Ireland', 'Israel', 'Singapore',
-        'Denmark', 'South Africa', 'Egypt', 'Philippines', 'Pakistan', 'Vietnam', 'Bangladesh',
-        'Chile', 'Colombia', 'Finland', 'Portugal', 'Greece', 'New Zealand', 'Peru', 'Czech Republic',
-        'Romania', 'Iraq', 'Qatar', 'Kazakhstan', 'Hungary', 'Kuwait', 'Morocco', 'Ukraine',
-        'Ethiopia', 'Kenya', 'Ecuador', 'Guatemala', 'Tanzania', 'Panama', 'Croatia',
-        'Lithuania', 'Slovenia', 'Serbia', 'Ghana', 'Tunisia', 'Bolivia', 'Paraguay',
-        'Uganda', 'Latvia', 'Estonia', 'Nepal', 'Iceland', 'Cambodia', 'Cyprus', 'Zimbabwe',
-        'Zambia', 'Albania', 'Mozambique', 'Jamaica', 'Malta', 'Mongolia', 'Armenia', 'Nicaragua'
-        ];
-        
-        this.countries = [];
-        // TODO: fetch subset from API here using countryList and rate limit
-        // Fetch subset from API here using countryList and rate limit
-        const fetchCountryData = async (country) => {
-          const url = `${NINJA_API_BASE_URL}/country?name=${encodeURIComponent(country)}`;
-          const response = await fetch(url, {
-            headers: {
-              'X-Api-Key': this.apiKey
-            }
-          });
-
-          if (!response.ok) {
-            throw new Error(`Failed to fetch data for ${country}: ${response.statusText}`);
-          }
-
-          return response.json();
-        };
-
-        // Shuffle the country list before slicing
-        const shuffledCountryList = this.shuffleArray(countryList);
-        for (const [index, country] of shuffledCountryList.slice(0, NINJA_MAX_INITIAL).entries()) {
-          try {
-            const data = await fetchCountryData(country);
-            this.countries.push(data);
-            console.log(`✅ Fetched data for ${country}`);
-
-            // Update the corresponding list item as data is fetched
-            const listItem = document.querySelector(`.item-list .country:nth-child(${index + 1})`);
-            if (listItem) {
-              listItem.textContent = `${country}` || 'Unknown';
-            }
-
-            await new Promise(resolve => setTimeout(resolve, NINJA_RATE_DELAY_MS)); // Rate limiting
-          } catch (err) {
-            console.error(`❌ Error fetching data for ${country}:`, err);
-          }
-        }
-      } // end else (ENABLE_NINJA_API)
+      await this.loadFromRestCountries();
+      this.populateCountryPool();
+      this.updateLeftPaneCountryList();
     } catch (err) {
       console.error('Initialization failed in QuizEngine.init():', err);
       throw err;
@@ -108,28 +51,67 @@ const NINJA_MAX_INITIAL = 10; // smaller subset for faster first load
    * Replace with a real fetch if needed.
    */
    /**
-   * Fallback to REST Countries API if Ninja API fails
+  * Fetch data from the REST Countries API
    */
   async loadFromRestCountries() {
-    const response = await fetch('https://restcountries.com/v3.1/all');
-    if (!response.ok) throw new Error('Failed to fetch countries');
-    
+    const response = await fetch(REST_COUNTRIES_API_URL);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch countries: ${response.status} ${response.statusText}`);
+    }
+
     const data = await response.json();
-    
-    this.countries = data.map(country => ({
-      name: country.name.common,
-      capital: country.capital ? country.capital[0] : 'N/A',
-      population: country.population || 0,
-      area: country.area || 0,
-      region: country.region || 'Unknown',
-      languages: country.languages ? Object.values(country.languages) : [],
-      currencies: country.currencies ? Object.values(country.currencies).map(c => c.name) : [],
-      timezones: country.timezones || [],
-      flag: country.flags?.png || country.flags?.svg || '',
-      flagAlt: country.flags?.alt || `Flag of ${country.name.common}`,
-      gdp: 0, // Not available in REST Countries
-      popularity: country.population || 0
-    })).filter(c => c.population > 0);
+
+    this.countries = data
+      .filter(country => country?.name?.common && country.population)
+      .map(country => ({
+        name: country.name.common,
+        code: country.cca3 || null,
+        capital: Array.isArray(country.capital) && country.capital.length ? country.capital[0] : 'N/A',
+        population: country.population || 0,
+        area: country.area || 0,
+        region: country.region || 'Unknown',
+        languages: country.languages ? Object.values(country.languages) : [],
+        currencies: country.currencies ? Object.values(country.currencies).map(c => c.name) : [],
+        timezones: country.timezones || [],
+        flag: country.flags?.png || country.flags?.svg || '',
+        flagAlt: country.flags?.alt || `Flag of ${country.name.common}`,
+        gdp: 0,
+        popularity: country.population || 0
+      }));
+  }
+
+  populateCountryPool() {
+    if (!Array.isArray(this.countries) || this.countries.length === 0) {
+      this.countryPool = [];
+      return;
+    }
+
+    const pool = this.shuffleArray(this.countries).slice(0, REST_COUNTRIES_SAMPLE_SIZE);
+    this.countryPool = pool;
+  }
+
+  updateLeftPaneCountryList() {
+    const listItems = document.querySelectorAll('.item-list .country');
+    if (!listItems.length) {
+      return;
+    }
+
+    // Clear any surplus list items if there are fewer countries than list slots
+    listItems.forEach(item => {
+      item.textContent = 'Waiting...';
+      delete item.dataset.countryCode;
+    });
+
+    this.countryPool.forEach((country, index) => {
+      const listItem = listItems[index];
+      if (!listItem || !country) {
+        return;
+      }
+      listItem.textContent = country.name;
+      if (country.code) {
+        listItem.dataset.countryCode = country.code;
+      }
+    });
   }
 
 
@@ -145,135 +127,298 @@ const NINJA_MAX_INITIAL = 10; // smaller subset for faster first load
     return shuffled;
   }
 
-  /**
-   *Change the text on buttons in left-pane
-   */
-  updateButtonLabels() {
-    const list = document.querySelectorAll('item-list');
-    list.forEach((item, index) => {
-      item.textContent = `Option ${index + 1}`;
+  generateQuestionSet(type, desiredCount = REST_COUNTRIES_SAMPLE_SIZE) {
+    const availableCountries = this.getCountriesForType(type, desiredCount);
+    if (!Array.isArray(availableCountries) || availableCountries.length === 0) {
+      return [];
+    }
+
+    const selection = this.shuffleArray(availableCountries).slice(0, Math.min(desiredCount, availableCountries.length));
+    const optionPool = this.uniqueByName([...availableCountries, ...this.countries]);
+
+    const questions = selection.map(country => this.buildQuestionForType(type, country, optionPool))
+      .filter(question => question !== null);
+
+    return questions;
+  }
+
+  getCountriesForType(type, desiredCount) {
+    const basePool = this.countryPool.length
+      ? [...this.countryPool]
+      : this.shuffleArray(this.countries).slice(0, Math.max(desiredCount, REST_COUNTRIES_SAMPLE_SIZE));
+
+    const filteredBase = basePool.filter(country => this.hasDataForType(country, type));
+    if (filteredBase.length > 0) {
+      return this.uniqueByName(filteredBase);
+    }
+
+    const extended = this.countries.filter(country => this.hasDataForType(country, type));
+    return this.uniqueByName([...filteredBase, ...extended]);
+  }
+
+  uniqueByName(countries) {
+    const seen = new Set();
+    return countries.filter(country => {
+      if (!country || !country.name) {
+        return false;
+      }
+      if (seen.has(country.name)) {
+        return false;
+      }
+      seen.add(country.name);
+      return true;
     });
   }
 
-  /**
-   * Create the a multiple choice question
-   */
-// /-- generateQuestionsandAnswers(){                                                                  ----
-//  /()   for (i=0;i< NINJA_MAX_INITIAL;i++){
-      // generateMultipleChoiceQuestion('population', this.countries);
-
-    // }
-  // }
-   /**
-   * Generate a multiple choice question
-  //  */
- /* generateMultipleChoiceQuestion(type, pool) {/*
-    const country = pool[Math.floor(Math.random() * pool.length)];
-    let question, correctAnswer, options, explanation, media;
+  hasDataForType(country, type) {
+    if (!country) {
+      return false;
+    }
 
     switch (type) {
       case 'population':
-        question = `What is the approximate population of ${country.name}?`;
-        correctAnswer = this.formatPopulation(country.population);
-        options = this.generatePopulationOptions(country.population, pool);
-        explanation = `${country.name} has a population of approximately ${correctAnswer}.`;
-        break;
-
-      // case 'area':
-      //   question = `What is the total land area of ${country.name} in square kilometers?`;
-      //   correctAnswer = this.formatArea(country.area);
-      //   options = this.generateAreaOptions(country.area, pool);
-      //   explanation = `${country.name} has a total area of ${correctAnswer}.`;
-      //   break;
-
-      // case 'gdp':
-        question = `What is the approximate GDP of ${country.name}?`;
-        correctAnswer = this.formatGDP(country.population * 15000); // Rough estimate based on population
-        options = this.generateGDPOptions(country.population * 15000, pool);
-        explanation = `${country.name} has an estimated GDP of approximately ${correctAnswer}.`;
-        break;
-
-      // case 'capital':
-      //   question = `What is the capital city of ${country.name}?`;
-      //   correctAnswer = country.capital;
-      //   options = this.generateCapitalOptions(country, pool);
-      //   explanation = `The capital of ${country.name} is ${correctAnswer}.`;
-      //   break;
-
+        return Number.isFinite(country.population) && country.population > 0;
       case 'currency':
-        question = `What currency is used in ${country.name}?`;
-        correctAnswer = country.currencies[0] || 'Unknown';
-        options = this.generateCurrencyOptions(country, pool);
-        explanation = `${country.name} uses ${correctAnswer}.`;
-        break;
-
+        return Array.isArray(country.currencies) && country.currencies.length > 0 && Boolean(country.currencies[0]);
       case 'languages':
-        question = `Which languages are spoken in ${country.name}?`;
-        correctAnswer = country.languages[0] || 'Unknown';
-        options = this.generateLanguageOptions(country, pool);
-        explanation = `${correctAnswer} is one of the official languages spoken in ${country.name}.`;
-        break;
+        return Array.isArray(country.languages) && country.languages.length > 0 && Boolean(country.languages[0]);
+      default:
+        return false;
+    }
+  }
 
-    //   case 'timezone':
-    //     question = `What is the time zone of ${country.name}?`;
-    //     correctAnswer = country.timezones[0];
-    //     options = this.generateTimezoneOptions(country, pool);
-    //     explanation = `The time zone of ${country.name} is ${correctAnswer}.`;
-    //     break;
+  buildQuestionForType(type, country, pool) {
+    switch (type) {
+      case 'population':
+        return this.buildPopulationQuestion(country, pool);
+      case 'currency':
+        return this.buildCurrencyQuestion(country, pool);
+      case 'languages':
+        return this.buildLanguagesQuestion(country, pool);
+      default:
+        return null;
+    }
+  }
 
-    //   case 'flag':
-    //     question = `What does the flag of ${country.name} look like?`;
-    //     correctAnswer = country.flag;
-    //     options = this.generateFlagOptions(country, pool);
-    //     explanation = `This is what the flag of ${country.name} looks like.`;
-    //     media = { type: 'flags', options: options };
-    //     break;
-  /*   } 
+  buildPopulationQuestion(country, pool) {
+    if (!this.hasDataForType(country, 'population')) {
+      return null;
+    }
+
+    const correctValue = country.population;
+    const rawOptions = this.generatePopulationOptions(correctValue, pool, country.name);
+    const uniqueOptions = Array.from(new Set(rawOptions)).slice(0, 4);
+
+    if (!uniqueOptions.includes(correctValue) || uniqueOptions.length < 4) {
+      return null;
+    }
+
+    const optionObjects = uniqueOptions.map(value => ({
+      label: this.formatPopulation(value),
+      value
+    }));
+
+    const shuffledOptions = this.shuffleArray(optionObjects);
+    const correctIndex = shuffledOptions.findIndex(option => option.value === correctValue);
+
+    if (correctIndex === -1) {
+      return null;
+    }
 
     return {
-      type,
-      question,
-      correctAnswer,
-      options: this.shuffleArray(options),
-      explanation,
-      media,
-      country: country.name
+      type: 'population',
+      country: country.name,
+      question: `What is the population of ${country.name}?`,
+      options: shuffledOptions,
+      correctIndex,
+      correctAnswerLabel: this.formatPopulation(correctValue),
+      explanation: `${country.name} has a population of about ${this.formatPopulation(correctValue)}.`
     };
   }
 
-  generateCurrencyOptions(country, pool) {
-    const options = [country.currencies[0]];
-    const otherCurrencies = pool
-      .filter(c => c.name !== country.name && c.currencies.length > 0)
-      .flatMap(c => c.currencies);
+  generatePopulationOptions(correctValue, pool, countryName) {
+    const candidates = pool
+      .filter(item => item.name !== countryName && this.hasDataForType(item, 'population'))
+      .map(item => item.population);
 
-    while (options.length < 4 && otherCurrencies.length > 0) {
-      const idx = Math.floor(Math.random() * otherCurrencies.length);
-      const currency = otherCurrencies.splice(idx, 1)[0];
-      if (!options.includes(currency)) {
-        options.push(currency);
+    const uniqueCandidates = Array.from(new Set(candidates));
+    const distractors = [];
+
+    while (uniqueCandidates.length > 0 && distractors.length < 3) {
+      const index = Math.floor(Math.random() * uniqueCandidates.length);
+      const candidate = uniqueCandidates.splice(index, 1)[0];
+      if (candidate !== correctValue) {
+        distractors.push(candidate);
       }
     }
-return options;
+
+    const fallbackMultipliers = [0.55, 0.75, 1.2, 1.4, 1.8];
+    let multiplierIndex = 0;
+
+    while (distractors.length < 3) {
+      const multiplier = fallbackMultipliers[multiplierIndex % fallbackMultipliers.length];
+      multiplierIndex += 1;
+      const candidate = Math.max(100000, Math.round(correctValue * multiplier));
+      if (![correctValue, ...distractors].includes(candidate)) {
+        distractors.push(candidate);
+      }
+    }
+
+    return [correctValue, ...distractors];
   }
 
-   /**
-   * Generate distractor options for population questions
-   */
- /* generatePopulationOptions(correctPop, pool) {
-    const options = [this.formatPopulation(correctPop)];
-    const multipliers = this.difficulty === 'easy' ? [0.5, 2, 5] : 
-                        this.difficulty === 'medium' ? [0.7, 1.5, 3] : 
-                        [0.85, 1.15, 1.4];
+  formatPopulation(value) {
+    if (!Number.isFinite(value)) {
+      return 'Unknown population';
+    }
+    return `${value.toLocaleString()} people`;
+  }
 
-    multipliers.forEach(mult => {
-      options.push(this.formatPopulation(Math.floor(correctPop * mult)));
+  buildCurrencyQuestion(country, pool) {
+    if (!this.hasDataForType(country, 'currency')) {
+      return null;
+    }
+
+    const correctCurrency = country.currencies[0];
+    const optionLabels = this.generateCurrencyOptions(correctCurrency, pool, country.name);
+    const uniqueOptions = optionLabels.filter((label, index, array) => Boolean(label) && array.indexOf(label) === index);
+
+    if (!uniqueOptions.includes(correctCurrency) || uniqueOptions.length < 4) {
+      return null;
+    }
+
+    const optionObjects = uniqueOptions.slice(0, 4).map(label => ({
+      label,
+      value: label
+    }));
+
+    const shuffledOptions = this.shuffleArray(optionObjects);
+    const correctIndex = shuffledOptions.findIndex(option => option.value === correctCurrency);
+
+    if (correctIndex === -1) {
+      return null;
+    }
+
+    return {
+      type: 'currency',
+      country: country.name,
+      question: `Which currency is used in ${country.name}?`,
+      options: shuffledOptions,
+      correctIndex,
+      correctAnswerLabel: correctCurrency,
+      explanation: `${country.name} uses the ${correctCurrency}.`
+    };
+  }
+
+  generateCurrencyOptions(correctCurrency, pool, countryName) {
+    const candidates = this.collectUniqueValues(pool, 'currencies', countryName)
+      .filter(currency => currency !== correctCurrency);
+
+    const distractors = [];
+    while (candidates.length > 0 && distractors.length < 3) {
+      const index = Math.floor(Math.random() * candidates.length);
+      const candidate = candidates.splice(index, 1)[0];
+      if (!distractors.includes(candidate)) {
+        distractors.push(candidate);
+      }
+    }
+
+    const fallbackCurrencies = ['Euro', 'United States dollar', 'Yen', 'Pound sterling', 'Rupee'];
+    for (const currency of fallbackCurrencies) {
+      if (distractors.length >= 3) {
+        break;
+      }
+      if (currency !== correctCurrency && !distractors.includes(currency)) {
+        distractors.push(currency);
+      }
+    }
+
+    return [correctCurrency, ...distractors].slice(0, 4);
+  }
+
+  buildLanguagesQuestion(country, pool) {
+    if (!this.hasDataForType(country, 'languages')) {
+      return null;
+    }
+
+    const correctLanguage = country.languages[0];
+    const optionLabels = this.generateLanguageOptions(correctLanguage, pool, country.name);
+    const uniqueOptions = optionLabels.filter((label, index, array) => Boolean(label) && array.indexOf(label) === index);
+
+    if (!uniqueOptions.includes(correctLanguage) || uniqueOptions.length < 4) {
+      return null;
+    }
+
+    const optionObjects = uniqueOptions.slice(0, 4).map(label => ({
+      label,
+      value: label
+    }));
+
+    const shuffledOptions = this.shuffleArray(optionObjects);
+    const correctIndex = shuffledOptions.findIndex(option => option.value === correctLanguage);
+
+    if (correctIndex === -1) {
+      return null;
+    }
+
+    return {
+      type: 'languages',
+      country: country.name,
+      question: `Which language is spoken in ${country.name}?`,
+      options: shuffledOptions,
+      correctIndex,
+      correctAnswerLabel: correctLanguage,
+      explanation: `${correctLanguage} is spoken in ${country.name}.`
+    };
+  }
+
+  generateLanguageOptions(correctLanguage, pool, countryName) {
+    const candidates = this.collectUniqueValues(pool, 'languages', countryName)
+      .filter(language => language !== correctLanguage);
+
+    const distractors = [];
+    while (candidates.length > 0 && distractors.length < 3) {
+      const index = Math.floor(Math.random() * candidates.length);
+      const candidate = candidates.splice(index, 1)[0];
+      if (!distractors.includes(candidate)) {
+        distractors.push(candidate);
+      }
+    }
+
+    const fallbackLanguages = ['English', 'Spanish', 'French', 'Arabic', 'Hindi', 'Portuguese', 'Russian', 'Chinese'];
+    for (const language of fallbackLanguages) {
+      if (distractors.length >= 3) {
+        break;
+      }
+      if (language !== correctLanguage && !distractors.includes(language)) {
+        distractors.push(language);
+      }
+    }
+
+    return [correctLanguage, ...distractors].slice(0, 4);
+  }
+
+  collectUniqueValues(pool, key, excludeCountryName) {
+    const seen = new Set();
+    const values = [];
+
+    pool.forEach(country => {
+      if (!country || country.name === excludeCountryName) {
+        return;
+      }
+
+      const items = Array.isArray(country[key]) ? country[key] : [];
+      items.forEach(item => {
+        if (!item || seen.has(item)) {
+          return;
+        }
+        seen.add(item);
+        values.push(item);
+      });
     });
 
-    return options;
-  } */
-
-
+    return values;
+  }
 
  } // end class QuizEngine
 
@@ -292,6 +437,10 @@ quiz.init().then(() => {
 
    // Show a preview of what got loaded
    console.log('🧩 Sample countries:', quiz.countries.slice(0, 10));
+
+   document.dispatchEvent(new CustomEvent('quiz:ready', {
+     detail: { loaded: quiz.countries ? quiz.countries.length : 0 }
+   }));
 
 //    const listItems = document.querySelectorAll('.item-list .country');
 
@@ -312,13 +461,6 @@ quiz.init().then(() => {
 }).catch(err => {
   console.error('💥 Initialization failed:', err);
 });
-
-// Notify other scripts that the quiz has finished initializing (include how many countries were loaded)
-try {
-  document.dispatchEvent(new CustomEvent('quiz:ready', { detail: { loaded: quiz.countries ? quiz.countries.length : 0 } }));
-} catch (e) {
-  // If dispatching fails for any reason, ignore — other scripts should still check window.quiz
-}
 
 // Optionally generate initial questions (safe to call; will use loaded countries)
 

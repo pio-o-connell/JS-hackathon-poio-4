@@ -48,6 +48,10 @@ body {
   visibility: hidden; /* Element is invisible but still takes up space */
 }
 
+.row.hidden {
+  display: none;
+}
+
 .visible {
   visibility: visible; /* Element is visible */
 }
@@ -68,6 +72,64 @@ body {
 .disabled {
   pointer-events: none;  /* No clicks or hovers */
   opacity: 0.5;          /* Optional: make it look disabled */
+}
+
+.selected-country {
+  font-weight: 700;
+  background: rgba(12, 74, 110, 0.1);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+}
+
+.answer-option {
+  width: 100%;
+  margin: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--primary-color, #0c4a6e);
+  background: #fff;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.answer-option:hover:not([disabled]) {
+  background: rgba(12, 74, 110, 0.1);
+}
+
+.answer-option.correct {
+  background: #2e7d32;
+  color: #fff;
+  border-color: #2e7d32;
+}
+
+.answer-option.incorrect {
+  background: #c62828;
+  color: #fff;
+  border-color: #c62828;
+}
+
+.answer-option.selected {
+  box-shadow: 0 0 0 2px rgba(12, 74, 110, 0.4);
+}
+
+.answer-option[disabled] {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.feedback {
+  min-height: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.feedback--correct {
+  color: #2e7d32;
+}
+
+.feedback--incorrect {
+  color: #c62828;
 }
 /* --------- Heading */
 

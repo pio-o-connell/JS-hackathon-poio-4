@@ -65,25 +65,26 @@
                             <div id="media" class="quiz__media" aria-hidden="true"></div>
                             <div id="options" class="quiz__options" role="listbox" aria-label="Answer choices"></div> -->
                             <!-- <p id="feedback" class="quiz__feedback" aria-live="polite"></p> -->
-                            <div class="row row-1">
-                              <p>`${country.name} has an estimated GDP of approximately ${correctAnswer}.`</p>
-                            </div>
-                            <div class="row row-2">
-                                <button>Row 2 Item 1</button>
-                                <button>Row 2 Item 2</button>
-                            </div>
-                            <div class="row row-3">
-                                <button>Row 3 Item 1</button>
-                                <button>Row 3 Item 2</button>
-                            </div>
-                            <div class="row row-4">
-                                <p>Row 4 Message</p>
-                            </div>
-                              <button id="showOverlayBtn">Click To Begin Quiz</button>
+                                                        <div class="row row-1">
+                                                            <p class="question-text" aria-live="polite">Select a country to get started.</p>
+                                                        </div>
+                                                        <div class="row row-2 hidden" aria-hidden="true">
+                                                                <button class="answer-option" type="button"></button>
+                                                                <button class="answer-option" type="button"></button>
+                                                        </div>
+                                                        <div class="row row-3 hidden" aria-hidden="true">
+                                                                <button class="answer-option" type="button"></button>
+                                                                <button class="answer-option" type="button"></button>
+                                                        </div>
+                                                        <div class="row row-4 hidden" aria-hidden="true">
+                                                                <p class="feedback" aria-live="polite"></p>
+                                                                <button id="nextQuestionBtn" class="hidden" type="button">Next Question</button>
+                                                        </div>
+                                                              <button id="showOverlayBtn" class="hidden" type="button">Start Quiz</button>
                             </div>
                             <div class="overlay">
                                 <div class="spinner">
-                                    <p class="overlay-text">Downloading quiz...</p>
+                                    <p class="overlay-text">Preparing quiz...</p>
                                     <!-- <button id="hideMsgBtn">Close</button> -->
                                 </div>
                             </div>
