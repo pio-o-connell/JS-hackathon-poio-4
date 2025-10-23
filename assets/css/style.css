@@ -431,6 +431,7 @@ body {
   gap: 1rem; /* spacing between rows */
   max-width: 400px;
   margin: 0 auto;
+  align-items: center;
 
   /* visibility: hidden;   /* start hidden */
   /* opacity: 0; */
@@ -628,5 +629,33 @@ footer {
 @media (max-width: 320px) {
   .game-area {
     min-height: 60vh; /* allow growth without forcing fixed height */
+  }
+
+  .right-pane .quiz__body {
+    font-size: 0.8rem;
+  }
+
+  .right-pane .quiz__body .answer-option {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
+    margin: 0.35rem;
+  }
+
+  .right-pane .quiz__body #showOverlayBtn {
+    font-size: 0.8rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .right-pane .quiz__body .row-1 p {
+    font-size: 1.04rem;
+  }
+
+  .right-pane .quiz__body .row-1 button {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .right-pane .quiz__body .row-4 p {
+    font-size: 0.8rem;
   }
 }
