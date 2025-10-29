@@ -1,0 +1,108 @@
+CountryFactsAPI
+
+
+ChatGPT said:
+
+
+{
+  "name": "Ireland",
+  "capital": "Dublin",
+  "population": 5123536,
+  "area_km2": 70273,
+  "currency": {"name": "Euro", "code": "EUR"},
+  "languages": ["Irish", "English"],
+  "borders": ["United Kingdom"],
+  "internet_domain": ".ie",
+  "driving_side": "left"
+}
+
+Great! Here’s a sample set of 10 quiz questions for Ireland, generated using typical Country Facts API data, along with the correct answers:
+
+1. Capital City
+
+Question: What is the capital of Ireland?
+
+Answer: Dublin
+
+2. Population
+
+Question: What is the population of Ireland?
+
+Answer: 5,123,536
+
+3. Total Area
+
+Question: What is the total area of Ireland in square kilometers?
+
+Answer: 70,273 km²
+
+4. Currency
+
+Question: What is the official currency of Ireland?
+
+Answer: Euro (EUR)
+
+5. Official Languages
+
+Question: What are the official languages of Ireland?
+
+Answer: Irish, English
+
+6. Government Type
+
+Question: What type of government does Ireland have?
+
+Answer: Parliamentary Republic
+
+7. Neighboring Countries
+
+Question: Which country shares a land border with Ireland?
+
+Answer: United Kingdom
+
+8. Internet Domain
+
+Question: What is the internet country code top-level domain (ccTLD) for Ireland?
+
+Answer: .ie
+
+9. Driving Side
+
+Question: On which side of the road do people drive in Ireland?
+
+Answer: Left
+
+10. Demonym
+
+Question: What is the term for people from Ireland?
+
+Answer: Irish
+
+
+
+How to use this for quizzes
+
+Map each field to a question template:
+
+capital → “What is the capital of Ireland?”
+
+population → “What is the population of Ireland?”
+
+area_km2 → “What is the total area of Ireland in km²?”
+
+currency.name → “What is the official currency of Ireland?”
+
+languages → “What are the official languages of Ireland?”
+
+government_type → “What type of government does Ireland have?”
+
+borders → “Which countries share a border with Ireland?”
+
+internet_domain → “What is the internet domain code for Ireland?”
+
+driving_side → “On which side of the road do people drive in Ireland?”
+
+demonym → “What is the term for people from Ireland?”
+
+Generate the quiz dynamically by iterating over this JSON and plugging the answers into your quiz format.
+

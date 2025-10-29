@@ -1,0 +1,80 @@
+🧩 Choices (based on what you described)
+Setting	Current choice	Notes
+Data source	restcountries.com v3.1 + local JSON for climate/animals	Free, reliable, CORS-friendly
+Question types	Population, Area, Currency, Languages, Capital, Time Zone, Flag + Compare mode	Matches your focus
+Difficulty levels	Easy / Medium / Hard	Easy = obvious answers, Hard = close differences
+Scoring	+1 correct, +0 incorrect, streak bonus after 3	Simple, rewarding
+Flow	10 questions per round, starts automatically on load, no timer (yet)	You can add timer later
+UI/UX	Responsive, mobile-first, keyboard shortcuts (1–4), explanations shown	Accessible and smooth
+Persistence	LocalStorage for last difficulty and scores	Saves small progress locally
+🎮 User stories (finalized version)
+
+Here’s your refined and complete set of user stories in the standard format you asked for:
+
+Core Gameplay
+
+As a player, I want to answer multiple-choice questions so that I can test my geography knowledge.
+
+As a learner, I want to see questions about population, area, currency, languages, capital, time zone, and flag so that I can gain a full understanding of each country.
+
+As a learner, I want occasional questions about climate and native animals so that I can appreciate environmental diversity.
+
+As a player, I want to compare two countries’ statistics so that I can learn about similarities and differences.
+
+As a player, I want the game to start automatically on page load so that I can play instantly.
+
+Difficulty
+
+As a beginner, I want easier questions on well-known countries so that I can start confidently.
+
+As an intermediate player, I want a balanced challenge so that I stay engaged.
+
+As an advanced player, I want tricky, close-value comparisons so that I can test my detailed knowledge.
+
+Scoring & Feedback
+
+As a player, I want my score to increase for correct answers so that I feel rewarded.
+
+As a player, I want wrong answers to be counted separately so that I can track improvement.
+
+As a player, I want live score updates after every answer so that I get instant feedback.
+
+As a competitive player, I want streak bonuses so that I’m motivated to stay accurate.
+
+As a learner, I want to see explanations for correct answers so that I can learn from my mistakes.
+
+Flow & Session
+
+As a player, I want to choose how many questions per round so that I can play in short or long sessions.
+
+As a busy user, I want to pause/resume the quiz so that I don’t lose progress.
+
+As a returning player, I want my last difficulty saved so that I can continue where I left off.
+
+Responsive & Accessibility
+
+As a mobile user, I want large buttons and a clean layout so that I can play comfortably.
+
+As a desktop user, I want to use number keys to answer ser, I want all elements labeled so that I can use assistive technology.quickly.
+
+As a screen-reader u
+
+As a color-blind user, I want visual indicators (icons/text) for right/wrong feedback so that I can interpret results clearly.
+
+Motivation & Progress
+
+As a player, I want to see my high score and streaks so that I can track my improvement.
+
+As a learner, I want a breakdown by category so that I can focus on weak topics.
+
+Data & Content (optional)
+
+As a content curator, I want to update or add questions easily so that the quiz stays current.
+
+As a developer, I want the data to come from a reliable public API so that I don’t manage databases manually.
+
+If you say “use defaults”, I can now generate the JavaScript + HTML + CSS code for the MVP playable version — responsive, starts on load, 10 random questions, real-time scoring, multiple choice, etc.
+
+Would you like me to go ahead and generate that MVP code (ready to drop into your site) using the defaults
+
+above?

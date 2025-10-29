@@ -1,0 +1,68 @@
+ApiCountries is to be used to retrieve the correct answers 
+
+
+
+
+Use Cases
+
+Country Facts APIs
+
+
+Build country quizzes (e.g., “What is the capital of Ireland?”)
+
+Reference apps or dashboards (showing country stats, population, currency)
+
+Educational tools for students or travellers
+
+
+
+
+Project Goal:
+To provide a gamified geographical quiz app focusing on characteristics of a coutry  population, geographies, languages,
+
+User goals:
+
+Users want to be able to:
+
+Increase their knowledge of the worlds geographies peoples languages indigenous animals
+Know how to take the test.
+Easily take the test.
+Take a test relevant to their ability level.
+Use the test on different devices.
+See accurate results, from credible references).
+Use what you learned about Copilot previously to create and refine user stories, acceptance criteria, and tasks based on these needs.
+
+
+
+
+
+
+Prompt
+Q.1 I am planning a simple project for a Simple Geographical Quiz game that involves knowledge of a selected countries population, languages, demographics, environment/climate types, indigenous animals.  The goal is to create an intuitive and user-friendly platform .
+Other typical questions involve knowledge of   Area, Currency, Languages, Capital, Time Zone,Flag
+
+
+Features needed:
+Responsive design on desktop, tablet, and mobile devices.
+Game begins on loading
+
+There are levels of difficulty involved
+Questions have multiple guesses to select from
+The correct answer adds  to the score  , an incorrect answers adds to wrong tally
+This is interactive and scores update in real time
+
+Generate user stories in the following format: As a <persona>, I want to <action> so that I can <result>.
+
+
+
+Q.2 Be specific  which endpoint free tier endpoint api can I retrieve the information from, try ninja  https://api-ninjas.com/
+
+			**********************************************
+
+Creating our Acceptance Criteria for each user story individually:
+“Create acceptance criteria based on this user story for an HTML, CSS and JavaScript typing test app: <user story>”
+
+
+
+			*********************************************
+“Create brief, focused tasks for an HTML, CSS and JavaScript typing test app based on this user story and its acceptance criteria: <user story and acceptance criteria>.”

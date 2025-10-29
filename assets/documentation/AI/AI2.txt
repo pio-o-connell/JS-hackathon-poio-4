@@ -1,0 +1,45 @@
+1. Population
+
+Question: What is the population of [Country Name]?
+
+Answer: You can retrieve the population data by querying the Country API with the country name.
+
+2. Area
+
+Question: What is the total land area of [Country Name] in square kilometers?
+
+Answer: The area data can be obtained from the Country API by specifying the country name.
+
+3. GDP
+
+Question: What is the Gross Domestic Product (GDP) of [Country Name] in USD?
+
+Answer: GDP figures are available through the Country API by querying with the country name.
+
+4. Currency
+
+Question: What is the official currency of [Country Name]?
+
+Answer: Currency information can be retrieved from the Country API by specifying the country.
+
+5. Languages
+
+Question: Which languages are spoken in [Country Name]?
+
+Answer: Language data can be accessed via the Country API by querying with the country name.
+
+6. Capital
+
+Question: What is the capital city of [Country Name]?
+
+Answer: Capital city information is available through the Country API by specifying the country.
+
+7. Time Zone
+
+Question: What is the time zone of [Country Name]?
+
+Answer: Time zone details can be obtained from the Country API by querying with the country name.
+
+Question: What does the flag of [Country Name] look like?
+
+Answer: Flag images can be retrieved using the Country Flag API by specifying the country.

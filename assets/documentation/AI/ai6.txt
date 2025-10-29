@@ -1,0 +1,230 @@
+
+I'll create a short todo list to track progress, mark the user-stories task in-progress, then draft a focused set of user stories for the HTML/CSS/JS project that fetches data from an API and displays it. Expected outcome: todo list saved and user stories delivered. I'll mark the first todo in-progress before drafting.
+
+Created 3 todos
+
+Now I'll mark the "Draft user stories" todo as completed so the todo list reflects progress; outcome: todo 1 -> completed.
+
+Completed (1/3) Draft user stories
+
+What I'm doing next
+I'll deliver a focused set of user stories for an HTML/CSS/JavaScript project that fetches data from an API and displays it. Each story follows the requested "AS A... I WANT TO... SO THAT I CAN..." format and includes short acceptance criteria where helpful.
+
+User stories
+AS A site visitor I WANT TO see a list of items fetched from the API SO THAT I CAN quickly browse available content.
+
+Acceptance criteria: Initial page load triggers an API request and displays returned items in a readable list or grid.
+AS A site visitor I WANT TO see a loading indicator while data is being fetched SO THAT I CAN understand the app is working and not stuck.
+
+Acceptance criteria: A visible loading spinner or message appears while the request is in progress and disappears after data or error is shown.
+AS A site visitor I WANT TO see a helpful error message if the API call fails SO THAT I CAN know something went wrong and optionally retry.
+
+Acceptance criteria: Network or server errors show a user-friendly message and a "Retry" control that re-attempts the request.
+AS A site visitor I WANT TO be able to filter the displayed data SO THAT I CAN focus on items that match my interests or criteria.
+
+Acceptance criteria: Filter controls (search, category, tags) update the displayed list client-side (or via API query) and handle zero-results gracefully.
+AS A site visitor I WANT TO paginate or infinitely scroll large result sets SO THAT I CAN navigate without long initial load times.
+
+Acceptance criteria: Pagination controls or infinite scroll fetch further pages from the API and append/replace items without duplications.
+AS A site visitor I WANT TO click an item to see more details SO THAT I CAN learn more about it.
+
+Acceptance criteria: Clicking an item opens a detail view (modal or new route) that shows additional fields fetched from the API or included in the list response.
+AS A returning user I WANT THE app to cache recently fetched data in memory or local storage SO THAT I CAN get faster load times and reduced API calls.
+
+Acceptance criteria: Revisiting the list uses cached data immediately while optionally refreshing in the background.
+AS A user with slow or flaky connectivity I WANT graceful handling of partial data and retries SO THAT I CAN still use the app with intermittent network.
+
+Acceptance criteria: Timeouts and retry attempts are handled, partial results are shown if available, and long-running requests show progress or cancel options.
+AS A keyboard or screen-reader user I WANT the list and controls to be accessible SO THAT I CAN interact with the app using assistive technologies.
+
+Acceptance criteria: Semantic HTML, ARIA attributes where needed, focus management for modals and dynamic updates, and visible focus outlines.
+AS A mobile user I WANT the layout to be responsive and touch-friendly SO THAT I CAN browse and interact comfortably on my phone.
+
+Acceptance criteria: List/grid reflows for narrow viewports, touch targets are at least 44px, and interactions (swipes, taps) behave predictably.
+AS A developer I WANT clear error and loading states in the UI components SO THAT I CAN test and maintain predictable behavior.
+
+Acceptance criteria: Components expose consistent props/state for loading, success, and error; unit/integration tests can assert each state.
+AS A privacy-conscious user I WANT the app to request only necessary data and respect CORS/security best practices SO THAT I CAN trust my data is handled properly.
+
+Acceptance criteria: Client only requests allowed endpoints, includes minimal headers, and the README notes CORS or API key handling.
+AS A product owner I WANT the ability to sort items by date, popularity or other fields SO THAT I CAN surface the most relevant content to users.
+
+Acceptance criteria: Sort controls invoke client-side or API-based sorting and update the visible order instantly.
+AS A user I WANT keyboard shortcuts for common actions (e.g., focus search, open first item) SO THAT I CAN navigate faster.
+
+Acceptance criteria: Documented, optional keyboard shortcuts that don't conflict with browser defaults and can be disabled.
+AS A tester I WANT deterministic test data or a dev-mode mock API SO THAT I CAN run automated tests and manual QA without relying on the production API.
+
+Acceptance criteria: A mock JSON endpoint or fixture files exist and are documented in the README for local development.
+Notes / next steps
+If you'd like, I can also:
+Expand each story into Gherkin-style acceptance tests.
+Create a minimal project scaffold (HTML/CSS/vanilla JS) implementing the core stories: fetch + list + loading + error + simple filter.
+Add a small README with data shape assumptions and how to run locally.
+Assumptions I used:
+API returns JSON arrays of items with at least id, title, description, and optional image, date, and category fields.
+Frontend will use the Fetch API and vanilla JS (no framework) unless you request otherwise.
+Which option next? I can start implementing a minimal scaffold that satisfies stories 1–4 (list, loading, error, filter) or expand stories with acceptance tests.
+
+
+I'll mark the "Add acceptance criteria" todo as in-progress, then produce acceptance criteria for all 15 stories; afterwards I'll mark that todo completed and report next steps.
+
+Starting (2/3) Add acceptance criteria
+
+I'll add 1–2 acceptance criteria for each of the 15 user stories we previously drafted. Below are concise, testable acceptance criteria you can use for implementation and QA.
+
+AS A site visitor I WANT TO see a list of items fetched from the API SO THAT I CAN quickly browse available content.
+
+Acceptance criteria:
+The app sends an API request on page load and renders each item with title and short description.
+If the API returns an empty array, a clear "No items found" message is displayed.
+AS A site visitor I WANT TO see a loading indicator while data is being fetched SO THAT I CAN understand the app is working and not stuck.
+
+Acceptance criteria:
+A loading spinner or message appears immediately after the fetch is initiated and is visible until data or error is displayed.
+The loading indicator is removed once items or an error message are rendered.
+AS A site visitor I WANT TO see a helpful error message if the API call fails SO THAT I CAN know something went wrong and optionally retry.
+
+Acceptance criteria:
+Network or non-2xx responses display a readable error message (not raw error object).
+A "Retry" button is present and triggers a new API request when clicked.
+AS A site visitor I WANT TO be able to filter the displayed data SO THAT I CAN focus on items that match my interests or criteria.
+
+Acceptance criteria:
+Filter inputs (search box, dropdowns) update the visible items immediately or after a short debounce.
+When no items match filters, a "No results for your filters" message is shown and filters can be cleared.
+AS A site visitor I WANT TO paginate or infinitely scroll large result sets SO THAT I CAN navigate without long initial load times.
+
+Acceptance criteria:
+Pagination: page numbers or Next/Previous controls fetch and display the correct page from the API and indicate the current page.
+Infinite scroll: reaching near the bottom triggers a fetch for the next page and appends items; duplicate items must not appear.
+AS A site visitor I WANT TO click an item to see more details SO THAT I CAN learn more about it.
+
+Acceptance criteria:
+Clicking an item opens a detail view (modal or new route) showing at least title, full description, image (if present), and date.
+The detail view can be closed and returns focus to the originating item (focus management).
+AS A returning user I WANT THE app to cache recently fetched data in memory or local storage SO THAT I CAN get faster load times and reduced API calls.
+
+Acceptance criteria:
+When revisiting the list within the same session, cached data displays immediately, and a background refresh fetches the latest data.
+Cache invalidation occurs after a configurable TTL (e.g., 5 minutes) or when the user triggers a manual refresh.
+AS A user with slow or flaky connectivity I WANT graceful handling of partial data and retries SO THAT I CAN still use the app with intermittent network.
+
+Acceptance criteria:
+Fetch timeouts or failures show a retry option and do not crash the UI.
+If partial data is returned, it is rendered and the UI indicates more data may be loading.
+AS A keyboard or screen-reader user I WANT the list and controls to be accessible SO THAT I CAN interact with the app using assistive technologies.
+
+Acceptance criteria:
+All interactive elements are reachable by keyboard and have visible focus indicators.
+Semantic HTML (lists, headings, buttons) and ARIA attributes are used where necessary; screen reader reads item titles and control labels.
+AS A mobile user I WANT the layout to be responsive and touch-friendly SO THAT I CAN browse and interact comfortably on my phone.
+
+Acceptance criteria:
+The layout adapts at common breakpoints (mobile/tablet/desktop) with readable text sizes and reflowing grid/list.
+Touch targets are at least 44x44 CSS pixels and gestures do not interfere with browser defaults.
+AS A developer I WANT clear error and loading states in the UI components SO THAT I CAN test and maintain predictable behavior.
+
+Acceptance criteria:
+Components expose/emit consistent states (loading, success, error) that can be asserted in tests.
+Unit or integration tests cover rendering for each state.
+AS A privacy-conscious user I WANT the app to request only necessary data and respect CORS/security best practices SO THAT I CAN trust my data is handled properly.
+
+Acceptance criteria:
+The client only requests required endpoints and does not log sensitive response data to the console in production builds.
+The README documents any required API keys, CORS considerations, and where to configure them for local development.
+AS A product owner I WANT the ability to sort items by date, popularity or other fields SO THAT I CAN surface the most relevant content to users.
+
+Acceptance criteria:
+Sort controls change the order of displayed items immediately and reflect the chosen sort field.
+If sorting is server-driven, the correct query is sent and the UI shows a loading state while sorted results load.
+AS A user I WANT keyboard shortcuts for common actions (e.g., focus search, open first item) SO THAT I CAN navigate faster.
+
+Acceptance criteria:
+Keyboard shortcuts are documented in the UI (help overlay or README) and trigger the expected actions.
+Shortcuts can be disabled or do not interfere with standard browser accessibility shortcuts.
+AS A tester I WANT deterministic test data or a dev-mode mock API SO THAT I CAN run automated tests and manual QA without relying on the production API.
+
+Acceptance criteria:
+A local mock server, JSON fixtures, or a dev mode flag is provided and documented in the README.
+Running the app in dev-mode uses the mock data and tests produce consistent, repeatable results.
+What's next
+
+I'll mark this todo as completed and then can produce the delivery notes and next steps (todo 3). Would you like the delivery notes as a short implementation checklist, or a runnable starter scaffold (HTML/CSS/JS) that implements the core stories?
+
+Please provide me with brief and focused tasks for these acceptance criteria according to each of the user stories
+
+
+I'll mark the "Provide delivery notes and next steps" todo as in-progress, then write concise, focused implementation tasks (small actionable items) mapped to each user story's acceptance criteria. Expected outcome: todo updated and a compact task list per story.
+
+Starting (3/3) Provide delivery notes and next steps
+
+I'll produce concise, actionable tasks mapped to each user story's acceptance criteria. Each task is small, testable, and suitable for assignment to a developer or as checklist items for a sprint.
+
+See list of items fetched from the API
+
+Task: Create api.js with a fetchItems() function that calls the API and returns JSON.
+Task: Build List component/section to render items with title and short description.
+Task: Add an "empty state" component showing "No items found" when array is empty.
+Show loading indicator while fetching
+
+Task: Add isLoading state and show a spinner element while true.
+Task: Hide spinner and display results or error when fetch resolves/rejects.
+Show helpful error message and retry
+
+Task: Add error state, display friendly error text on fetch failure.
+Task: Add a "Retry" button wired to re-call fetchItems().
+Filtering
+
+Task: Add search input and dropdown filter controls with debounced input handling.
+Task: Implement filter logic that updates displayed items and show "No results for your filters" when none match.
+Task: Add a "Clear filters" control.
+Pagination / infinite scroll
+
+Task (pagination): Implement Next/Prev or page number controls; fetch page N via fetchItems({page}).
+Task (infinite scroll alternative): Implement scroll listener that triggers next-page fetch when near bottom and appends items.
+Task: Ensure deduplication logic when appending pages.
+Item detail view
+
+Task: Create ItemDetail modal or route that shows title, full description, optional image and date.
+Task: Ensure focus is sent to the modal when opened and returned to originating element on close.
+Caching
+
+Task: Implement in-memory cache (and optional localStorage) with TTL; return cached data immediately and then refresh in background.
+Task: Add a "Refresh" button to manually invalidate cache.
+Handling slow/flaky connectivity
+
+Task: Add request timeout and up to N retry attempts with exponential backoff.
+Task: If partial data arrives, render it and show "Loading more..." indicator for remaining data.
+Accessibility
+
+Task: Replace divs with semantic elements (ul/li, buttons, labels) and provide ARIA attributes where needed.
+Task: Ensure all controls are keyboard-focusable and visible focus styles exist.
+Mobile responsiveness and touch
+
+Task: Add responsive CSS breakpoints for mobile/tablet/desktop and test viewport widths.
+Task: Ensure touch target sizes >= 44px and spacing between controls.
+Developer-friendly states for testing
+
+Task: Export or expose loading/success/error state hooks or props for components to allow unit testing.
+Task: Add unit tests that render components in loading, success, and error states.
+Privacy/CORS/security notes
+
+Task: Audit requested fields and remove any unnecessary headers or console logs for production builds.
+Task: Add README section documenting API keys, CORS, and where to configure credentials locally.
+Sorting
+
+Task: Add a sort control UI (select) that changes the sort order client-side or sends sort params to the API.
+Task: Indicate current sort in the UI and show loading while applying server-side sort.
+Keyboard shortcuts
+
+Task: Implement a small keyboard handler for shortcuts like / to focus search and Enter to open first item.
+Task: Add a UI help overlay or README section listing shortcuts and an option to disable them.
+Dev-mode mock API and deterministic test data
+
+Task: Add a dev-data JSON file and a simple mock server (or conditional fetch wrapper) to serve fixtures in dev mode.
+Task: Document how to start the app in dev-mode and run tests against the mock data.
+Progress update and next step
+
+I've marked the acceptance criteria todo as completed and set "Provide delivery notes and next steps" to in-progress.
+Next I can: a) convert these tasks into GitHub issues or a project board; b) scaffold a minimal runnable prototype implementing tasks 1–4; or c) expand tasks into more detailed steps (commands, file names, small code snippets). Which would you like me to do next?
