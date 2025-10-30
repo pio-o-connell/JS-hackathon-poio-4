@@ -8,7 +8,19 @@ const REST_COUNTRIES_API_URL = 'https://restcountries.com/v3.1/all?fields=name,p
 const REST_COUNTRIES_SAMPLE_SIZE = 10;
 
 //Export this class
- class QuizEngine { 
+ /**
+  * QuizEngine - Core quiz logic and data handling.
+  * Responsibilities:
+  *  - Load and normalize country data from REST Countries
+  *  - Build a small randomized country pool for the left pane
+  *  - Generate question sets (population, currency, languages)
+  *  - Provide helper utilities for distractor generation and formatting
+  */
+ class QuizEngine {
+  /**
+   * Construct a new QuizEngine instance with default state values.
+   * No external inputs; prepares internal arrays and settings.
+   */
   constructor() {
     this.countries = [];
 
@@ -33,7 +45,13 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
    * Initialize the quiz - fetch data and prepare questions
    */
 
-   async init() {
+  /**
+  * Initialize engine: fetch countries, build a sample pool and update UI.
+  * Returns: Promise<void>
+  * Side-effects: populates `this.countries`, `this.countryPool` and calls
+  * `updateLeftPaneCountryList()` which updates DOM elements directly.
+  */
+  async init() {
     try {
       console.log('🚀 Initializing quiz...');
 
@@ -53,7 +71,13 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
    /**
   * Fetch data from the REST Countries API
    */
-  async loadFromRestCountries() {
+  /**
+   * Fetch and normalize data from the REST Countries API.
+   * Populates `this.countries` with objects of shape:
+   * { name, code, capital, population, area, region, languages[], currencies[], timezones[], flag, flagAlt }
+   * Throws on non-OK HTTP responses.
+   */
+   async loadFromRestCountries() {
     const response = await fetch(REST_COUNTRIES_API_URL);
     if (!response.ok) {
       throw new Error(`Failed to fetch countries: ${response.status} ${response.statusText}`);
@@ -80,6 +104,10 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
       }));
   }
 
+  /**
+   * Create a randomized sample (`this.countryPool`) from `this.countries`.
+   * Uses `shuffleArray` and slices to `REST_COUNTRIES_SAMPLE_SIZE`.
+   */
   populateCountryPool() {
     if (!Array.isArray(this.countries) || this.countries.length === 0) {
       this.countryPool = [];
@@ -90,6 +118,11 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     this.countryPool = pool;
   }
 
+  /**
+   * Write the `this.countryPool` entries into the left-pane DOM slots.
+   * Side-effects: mutates `.item-list .country` textContent and dataset.
+   * If there are fewer countries than slots, surplus slots are left as 'Waiting...'.
+   */
   updateLeftPaneCountryList() {
     const listItems = document.querySelectorAll('.item-list .country');
     if (!listItems.length) {
@@ -118,6 +151,11 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
    /**
    * Shuffle array (Fisher-Yates)
    */
+  /**
+   * Return a new array with elements shuffled (Fisher-Yates algorithm).
+   * Input: array
+   * Output: shuffled copy
+   */
   shuffleArray(array) {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -127,21 +165,60 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     return shuffled;
   }
 
+  /**
+   * Generate a set of quiz questions for the provided `type`.
+   * Inputs:
+   *  - type: 'population' | 'currency' | 'languages'
+   *  - desiredCount: number of questions (default REST_COUNTRIES_SAMPLE_SIZE)
+   * Returns: Array of question objects or empty array if insufficient data.
+   */
   generateQuestionSet(type, desiredCount = REST_COUNTRIES_SAMPLE_SIZE) {
     const availableCountries = this.getCountriesForType(type, desiredCount);
     if (!Array.isArray(availableCountries) || availableCountries.length === 0) {
       return [];
     }
 
-    const selection = this.shuffleArray(availableCountries).slice(0, Math.min(desiredCount, availableCountries.length));
+    // Try to produce exactly `desiredCount` questions where possible.
+    // Some country entries may not yield a usable question (builder returns null),
+    // so iterate through a shuffled list and collect until we hit desiredCount
+    // or exhaust reasonable candidates. If still short, attempt to expand
+    // the pool using the full country list as a fallback.
+    const shuffledAvailable = this.shuffleArray(availableCountries);
     const optionPool = this.uniqueByName([...availableCountries, ...this.countries]);
 
-    const questions = selection.map(country => this.buildQuestionForType(type, country, optionPool))
-      .filter(question => question !== null);
+    const questions = [];
+    const tried = new Set();
 
-    return questions;
+    for (let i = 0; i < shuffledAvailable.length && questions.length < desiredCount; i++) {
+      const country = shuffledAvailable[i];
+      if (!country || tried.has(country.name)) continue;
+      tried.add(country.name);
+      const q = this.buildQuestionForType(type, country, optionPool);
+      if (q) questions.push(q);
+    }
+
+    // If we didn't reach desiredCount, try additional countries from the
+    // full list (this.countries) to find more valid questions.
+    if (questions.length < desiredCount) {
+      const fallbackPool = this.shuffleArray(this.countries).filter(c => !tried.has(c.name));
+      for (let i = 0; i < fallbackPool.length && questions.length < desiredCount; i++) {
+        const country = fallbackPool[i];
+        if (!this.hasDataForType(country, type)) continue;
+        const q = this.buildQuestionForType(type, country, optionPool);
+        if (q) {
+          questions.push(q);
+          tried.add(country.name);
+        }
+      }
+    }
+
+    return questions.slice(0, desiredCount);
   }
 
+  /**
+   * Build and return a pool of countries that have valid data for `type`.
+   * Tries `this.countryPool` first then falls back to `this.countries`.
+   */
   getCountriesForType(type, desiredCount) {
     const basePool = this.countryPool.length
       ? [...this.countryPool]
@@ -156,6 +233,10 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     return this.uniqueByName([...filteredBase, ...extended]);
   }
 
+  /**
+   * Deduplicate countries by `name` preserving first occurrence.
+   * Returns an array with unique country names.
+   */
   uniqueByName(countries) {
     const seen = new Set();
     return countries.filter(country => {
@@ -170,6 +251,11 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     });
   }
 
+  /**
+   * Check whether a given `country` object has the necessary data
+   * for the requested `type` ('population'|'currency'|'languages').
+   * Returns boolean.
+   */
   hasDataForType(country, type) {
     if (!country) {
       return false;
@@ -187,6 +273,10 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     }
   }
 
+  /**
+   * Dispatcher: call the appropriate builder for `type` and return
+   * a question object or null if construction fails.
+   */
   buildQuestionForType(type, country, pool) {
     switch (type) {
       case 'population':
@@ -200,6 +290,12 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     }
   }
 
+  /**
+   * Build a population question for the supplied `country`.
+   * Uses `generatePopulationOptions` to produce distractors.
+   * Returns a question object { type, country, question, options[], correctIndex, correctAnswerLabel, explanation }
+   * or `null` when not enough distinct options can be formed.
+   */
   buildPopulationQuestion(country, pool) {
     if (!this.hasDataForType(country, 'population')) {
       return null;
@@ -236,6 +332,12 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     };
   }
 
+  /**
+   * Create an array containing `correctValue` and up to 3 numeric distractors.
+   * Strategy:
+   *  - prefer population values from `pool` (excluding the same country)
+   *  - fall back to multiplier-based values when pool lacks candidates
+   */
   generatePopulationOptions(correctValue, pool, countryName) {
     const candidates = pool
       .filter(item => item.name !== countryName && this.hasDataForType(item, 'population'))
@@ -267,6 +369,9 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     return [correctValue, ...distractors];
   }
 
+  /**
+   * Format a population number for display, e.g. '1,234,567 people'.
+   */
   formatPopulation(value) {
     if (!Number.isFinite(value)) {
       return 'Unknown population';
@@ -274,6 +379,10 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     return `${value.toLocaleString()} people`;
   }
 
+  /**
+   * Build a currency question for `country`. Returns question object or null.
+   * Uses `generateCurrencyOptions` to assemble distractors.
+   */
   buildCurrencyQuestion(country, pool) {
     if (!this.hasDataForType(country, 'currency')) {
       return null;
@@ -310,6 +419,10 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     };
   }
 
+  /**
+   * Produce an array of currency names: [correctCurrency, ...distractors]
+   * Tries pool values first, then uses fallbackCurrencies to reach 4 items.
+   */
   generateCurrencyOptions(correctCurrency, pool, countryName) {
     const candidates = this.collectUniqueValues(pool, 'currencies', countryName)
       .filter(currency => currency !== correctCurrency);
@@ -336,6 +449,9 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     return [correctCurrency, ...distractors].slice(0, 4);
   }
 
+  /**
+   * Build a languages question for `country`. Returns question object or null.
+   */
   buildLanguagesQuestion(country, pool) {
     if (!this.hasDataForType(country, 'languages')) {
       return null;
@@ -372,6 +488,10 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     };
   }
 
+  /**
+   * Produce an array of language names including correctLanguage and
+   * up to 3 distractors sourced from pool then fallbackLanguages.
+   */
   generateLanguageOptions(correctLanguage, pool, countryName) {
     const candidates = this.collectUniqueValues(pool, 'languages', countryName)
       .filter(language => language !== correctLanguage);
@@ -398,6 +518,11 @@ const REST_COUNTRIES_SAMPLE_SIZE = 10;
     return [correctLanguage, ...distractors].slice(0, 4);
   }
 
+  /**
+   * Helper to collect unique scalar values (e.g., currencies or languages)
+   * from a pool of country objects while excluding a given country name.
+   * Returns an array of unique values in first-seen order.
+   */
   collectUniqueValues(pool, key, excludeCountryName) {
     const seen = new Set();
     const values = [];

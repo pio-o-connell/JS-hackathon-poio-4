@@ -1,0 +1,69 @@
+
+
+
+ the shared global object is essentially the bridge between quiz.js (engine) and script.js (UI). In the code, this is exposed as
+  globally accessible instance of QuizEngine that both quiz.js (the engine) and script.js (the UI) use to share state, data, and functions.
+ Defined in quiz.js as a singleton instance of QuizEngine.
+
+ Attached to window so it’s globally accessible by any other script, including script.js.
+
+
+ 🔹 Summary Table
+Event Name	Dispatched by	Listened by	Purpose
+quiz:ready	quiz.js	script.js	Countries loaded, UI can enable interactions
+quiz:answered	quiz.js	script.js	Answer checked, update feedback & score
+quiz:finished	quiz.js	script.js	All questions done, show final summary
+
+Essentially, script.js reacts to these events to control DOM updates and quiz flow, while quiz.js generates data and manages the game logic.
+
+🧠 Example Flow
+script.js 
+==============
+Page Load
+│
+├── cache DOM elements
+├── set up listeners
+│
+└── Wait for quiz engine ready
+     │
+     ├── Click Quiz Type → runGame()
+     ├── Click Country → handleCountrySelection()
+     ├── Click Start → beginQuiz()
+     │
+     ├── Generate questions → renderQuestion()
+     ├── Click Answer → handleAnswerSelection()
+     ├── Next → handleNextQuestion()
+     └── Finish → finalizeQuiz()
+
+
+Quiz.js Page Load
+│
+├── Create QuizEngine instance
+├── Initialize variables (countries[], score, currentQuestion, streak, etc.)
+├── init() → fetch country data from REST API
+│
+└── Dispatch "quiz:ready" event
+     │
+     ├── generateQuestionSet(gameType, numQuestions)
+     │     ├── Pick random countries from countries[]
+     │     ├── Build questions (options + correctIndex)
+     │     └── Return array of question objects
+     │
+     ├── nextQuestion()
+     │     ├── Select next question from generated set
+     │     └── Return question object for UI
+     │
+     ├── checkAnswer(selectedIndex)
+     │     ├── Compare selectedIndex with correctIndex
+     │     ├── Update score / wrong / streak
+     │     └── Return true/false
+     │
+     ├── resetGame()
+     │     ├── Reset score, wrong, streak
+     │     └── Clear currentQuestion
+     │
+     └── (Optional) Dispatch events:
+           ├── "quiz:answered" → after checkAnswer
+           └── "quiz:finished" → after all questions answered
+
+

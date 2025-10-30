@@ -1,6 +1,49 @@
 // Wait for the DOM to finish loading before running the game
 // Get the button elements and add event listeners to them
 
+/*
+    script.js -- UI controller for the World Quiz
+
+    Overview (function -> one-line):
+    - cacheDomReferences: caches commonly used DOM nodes
+    - setupModeButtons: attach click handlers to quiz category buttons
+    - onModeButtonClick: entry when a mode button is clicked; calls runGame
+    - setupCountrySelection: wire left-pane country list click handlers
+    - setupAnswerControls: wire the four answer buttons
+    - setupNextButton: wire the Next Question button
+    - setupStartButton: wire the Start Quiz button
+    - handleQuizReady: handle 'quiz:ready' event from quiz.js
+    - runGame: prepare left-pane for a selected game type
+    - setupLeftPaneGameArea: enable the left-pane for interaction
+    - setupRightPaneGameArea: reveal/prepare right pane after country select
+    - handleCountrySelection: respond to choosing a country from left pane
+    - hideQuizRowsUntilStart: hide answer/feedback rows until quiz start
+    - resetRightPaneBeforeQuiz: hide right-pane and reset messages
+    - updateStatusMessage: helper to update status area text and color
+    - capitalize: small string helper
+    - getModeColor: read CSS variable for current mode color
+    - restoreStartButton: re-enable start button UI
+    - beginQuiz: show overlay and prepare questions
+    - completeQuizLoading: hide overlay and call startQuiz
+    - startQuiz: request questions from window.quiz and start the flow
+    - showQuizRows: unhide answer/feedback rows
+    - renderQuestion: populate question text and answer buttons
+    - toggleAnswerButtons: enable/disable and optionally clear answers
+    - handleAnswerSelection: process user's answer, mark correct/incorrect
+    - setFeedback: write feedback text and set correct/incorrect class
+    - handleNextQuestion: move to next question or restart when finished
+    - finalizeQuiz: finish quiz and show summary/play-again UI
+    - restartQuiz: convenience wrapper to begin a new quiz
+    - resetScoresForNewQuiz / setScoreValue / getScoreValue: score helpers
+    - incrementScore / incrementWrongAnswer: convenience increments
+
+    Notes:
+    - This file orchestrates DOM updates and gameState but delegates
+        question generation to the global `window.quiz` (QuizEngine).
+    - It uses class toggles and aria-hidden attributes to control visibility
+        and accessibility. Many functions are defensive when DOM nodes are missing.
+*/
+
 
 //import { QuizEngine, value } from './quiz.js';
 
@@ -43,12 +86,23 @@ function cacheDomReferences() {
     statusMessageElement = document.querySelector('.message-info-disabled');
 }
 
+// cacheDomReferences
+// Purpose: find and hold commonly-used DOM nodes so other functions
+// can reuse them without repeated queries. Leaves variables null
+// if nodes are absent (caller code checks for these cases).
+
+
 function setupModeButtons() {
     const modeButtons = document.querySelectorAll('button[data-type]');
     modeButtons.forEach(button => {
         button.addEventListener('click', onModeButtonClick);
     });
 }
+
+// setupModeButtons
+// Purpose: attach click listeners to the category buttons (population/currency/languages).
+// These buttons trigger the main `runGame` flow via `onModeButtonClick`.
+
 
 function onModeButtonClick(event) {
     const type = event.currentTarget.getAttribute('data-type');
@@ -58,12 +112,22 @@ function onModeButtonClick(event) {
     runGame(type);
 }
 
+// onModeButtonClick
+// Purpose: event handler for mode buttons. Reads the `data-type` and
+// calls `runGame` to set up the left pane for country selection.
+
+
 function setupCountrySelection() {
     const countries = document.querySelectorAll('.item-list .country');
     countries.forEach(item => {
         item.addEventListener('click', () => handleCountrySelection(item));
     });
 }
+
+// setupCountrySelection
+// Purpose: attach click listeners to each left-pane country item so that
+// when a user selects a country the `handleCountrySelection` flow runs.
+
 
 function setupAnswerControls() {
     answerButtons = Array.from(document.querySelectorAll('.answer-option'));
@@ -73,12 +137,23 @@ function setupAnswerControls() {
     });
 }
 
+// setupAnswerControls
+// Purpose: cache the four answer buttons and wire each to the shared
+// `handleAnswerSelection` handler. Also stores `data-option-index` so
+// answers map to the options array returned by the quiz engine.
+
+
 function setupNextButton() {
     nextQuestionButton = document.getElementById('nextQuestionBtn');
     if (nextQuestionButton) {
         nextQuestionButton.addEventListener('click', handleNextQuestion);
     }
 }
+
+// setupNextButton
+// Purpose: locate the Next Question button and attach the handler that
+// advances the quiz or restarts at the end.
+
 
 function setupStartButton() {
     if (!startQuizButton) {
@@ -89,6 +164,11 @@ function setupStartButton() {
     }
 }
 
+// setupStartButton
+// Purpose: ensure the Start Quiz control is wired to `beginQuiz` so the
+// overlay / loading flow begins when pressed.
+
+
 function handleQuizReady(event) {
     const loaded = event?.detail?.loaded ?? 0;
     if (statusMessageElement) {
@@ -97,6 +177,11 @@ function handleQuizReady(event) {
             : 'Unable to load country data. Refresh and try again.';
     }
 }
+
+// handleQuizReady
+// Purpose: listener for the `quiz:ready` CustomEvent dispatched by quiz.js.
+// It reads `event.detail.loaded` and updates the status message accordingly.
+
 
 /**
  * The main game "loop", called when the script is first loaded
@@ -131,6 +216,12 @@ function runGame(gameType) {
     setupLeftPaneGameArea(gameType);
 }
 
+// runGame
+// Purpose: initialize UI state for a chosen game type. Validates the
+// type, resets game state, styles the left-pane buttons according to the
+// selected mode color, updates the status area and enables the left pane.
+
+
 /**
  * enable left pane of Game area
  * Add event listeners to each button 
@@ -145,6 +236,11 @@ function setupLeftPaneGameArea(gameType) {
     leftPane.classList.remove('transparent');
     leftPane.classList.add('visible');
 }
+
+// setupLeftPaneGameArea
+// Purpose: visually and interactively enable the left-pane so users can
+// select a country; this function mainly toggles CSS classes.
+
 
 /**
  * enable right pane of Game area
@@ -194,6 +290,12 @@ function setupRightPaneGameArea(countryName, gameType) {
     }
 }
 
+// setupRightPaneGameArea
+// Purpose: reveal the right pane and write an instructional message that
+// confirms which country and game type the quiz will use. Keeps answer rows
+// hidden until the user presses Start Quiz.
+
+
 function handleCountrySelection(item) {
     if (!item) {
         return;
@@ -228,6 +330,12 @@ function handleCountrySelection(item) {
     setupRightPaneGameArea(name, gameState.currentGameType);
 }
 
+// handleCountrySelection
+// Purpose: process a click on a left-pane country item. Validates that
+// a quiz type is selected and that the item contains valid country text,
+// then marks it selected and prepares the right pane for the quiz.
+
+
 function hideQuizRowsUntilStart() {
     if (!rightPaneElement) {
         return;
@@ -252,6 +360,11 @@ function hideQuizRowsUntilStart() {
     }
 }
 
+// hideQuizRowsUntilStart
+// Purpose: hide answer rows (row-2/row-3) and feedback (row-4) until the
+// quiz begins. Also disables answer buttons and hides the Next button.
+
+
 function resetRightPaneBeforeQuiz() {
     if (!rightPaneElement) {
         rightPaneElement = document.querySelector('.right-pane');
@@ -275,6 +388,12 @@ function resetRightPaneBeforeQuiz() {
     }
 }
 
+// resetRightPaneBeforeQuiz
+// Purpose: fully reset the right pane to its initial state (hidden,
+// default question text, no start button visible). Used when switching
+// categories or preparing a fresh selection.
+
+
 function updateStatusMessage(message, color) {
     if (!statusMessageElement) {
         statusMessageElement = document.querySelector('.message-info-disabled');
@@ -289,12 +408,21 @@ function updateStatusMessage(message, color) {
     }
 }
 
+// updateStatusMessage
+// Purpose: helper used throughout the file to show short messages to the
+// user in the status bar. Accepts an optional color string to tint the text.
+
+
 function capitalize(value) {
     if (!value || typeof value !== 'string') {
         return '';
     }
     return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+// capitalize
+// Purpose: small utility to capitalize the first letter of a string.
+
 
 function getModeColor(mode) {
     if (!mode) {
@@ -304,6 +432,11 @@ function getModeColor(mode) {
     const value = styles.getPropertyValue(`--${mode}-color`);
     return value ? value.trim() : '#000';
 }
+
+// getModeColor
+// Purpose: read a CSS custom property on :root for the given mode
+// (e.g., --population-color) and return a usable hex/string value.
+
 
 function restoreStartButton() {
     if (!startQuizButton) {
@@ -317,6 +450,11 @@ function restoreStartButton() {
         startQuizButton.textContent = 'Start Quiz';
     }
 }
+
+// restoreStartButton
+// Purpose: show and enable the Start Quiz button (used when an error
+// condition leaves the UI disabled and the user should be able to retry).
+
 
 /**
  * Begin the quiz: show overlay immediately, then hide after a delay
@@ -364,6 +502,12 @@ function beginQuiz(event) {
     setTimeout(() => completeQuizLoading(), 500);
 }
 
+// beginQuiz
+// Purpose: validate prerequisites (mode selected, country chosen, quiz data ready),
+// show a short overlay, disable the UI and then call `completeQuizLoading` to
+// continue; acts as the user-initiated kickoff for question generation.
+
+
 /**
  * Hide the overlay and reveal rows 2-4 in the right pane
  */
@@ -385,6 +529,10 @@ function completeQuizLoading() {
 
     startQuiz();
 }
+
+// completeQuizLoading
+// Purpose: hide the overlay used during 'loading' and delegate to `startQuiz`.
+
 
 function startQuiz() {
     if (!gameState.currentGameType) {
@@ -437,6 +585,12 @@ function startQuiz() {
     renderQuestion();
 }
 
+// startQuiz
+// Purpose: ask the QuizEngine (`window.quiz`) for a generated question set
+// and initialize local `gameState` with those questions; show the UI rows
+// and render the first question. Handles engine-errors gracefully.
+
+
 function showQuizRows() {
     if (!rightPaneElement) {
         return;
@@ -448,6 +602,10 @@ function showQuizRows() {
         row.setAttribute('aria-hidden', 'false');
     });
 }
+
+// showQuizRows
+// Purpose: reveal the answer and feedback rows after the quiz has started.
+
 
 function renderQuestion() {
     const questionData = gameState.questions[gameState.currentQuestionIndex];
@@ -491,6 +649,11 @@ function renderQuestion() {
 
     gameState.hasAnswered = false;
 }
+
+// renderQuestion
+// Purpose: populate the question text and answer buttons for the current
+// `gameState.currentQuestionIndex`. Ensures unused buttons are hidden/disabled.
+
 
 function toggleAnswerButtons(disable, clearText) {
     answerButtons.forEach(button => {
@@ -600,10 +763,21 @@ function finalizeQuiz() {
     }
 
     if (startQuizButton) {
+        // Change Start button into a Play Again control that reloads
+        // a fresh set of countries for the left pane.
         startQuizButton.classList.remove('hidden');
         startQuizButton.removeAttribute('disabled');
         startQuizButton.textContent = 'Play Again';
         startQuizButton.setAttribute('aria-hidden', 'false');
+        // swap its click handler to perform a full reload of the country pool
+        try {
+            startQuizButton.removeEventListener('click', beginQuiz);
+        } catch (e) {
+            /* ignore if not attached */
+        }
+        // ensure we don't double-bind
+        startQuizButton.removeEventListener('click', handlePlayAgain);
+        startQuizButton.addEventListener('click', handlePlayAgain);
     }
 
     const statusColor = getModeColor(gameState.currentGameType);
@@ -613,6 +787,55 @@ function finalizeQuiz() {
 function restartQuiz() {
     gameState.isComplete = false;
     beginQuiz();
+}
+
+// handlePlayAgain
+// Purpose: invoked when the user clicks 'Play Again' after finishing a quiz.
+// Action: repopulate the left-pane with a fresh set of countries, clear any
+// selected country, reset the right pane to initial state, and restore the
+// Start Quiz button to its normal behavior.
+function handlePlayAgain(event) {
+    if (event) event.preventDefault();
+
+    const quizEngine = window.quiz;
+    if (quizEngine && typeof quizEngine.populateCountryPool === 'function') {
+        // create a new random pool and update the left-pane DOM
+        try {
+            quizEngine.populateCountryPool();
+            quizEngine.updateLeftPaneCountryList();
+        } catch (e) {
+            console.warn('Play Again: failed to repopulate country pool', e);
+        }
+    }
+
+    // clear any selected country highlights
+    document.querySelectorAll('.item-list .country.selected-country')
+        .forEach(el => el.classList.remove('selected-country'));
+
+    // clear game selection and reset right pane UI
+    gameState.selectedCountryName = null;
+    resetRightPaneBeforeQuiz();
+
+    // enable left pane so user can pick a new country for the same mode
+    if (gameState.currentGameType) {
+        setupLeftPaneGameArea(gameState.currentGameType);
+        updateStatusMessage(`New countries loaded. Choose a country for ${capitalize(gameState.currentGameType)}.`, getModeColor(gameState.currentGameType));
+    } else {
+        updateStatusMessage('New countries loaded. Select a quiz type and choose a country.');
+    }
+
+    // restore Start Quiz behavior on the button and hide it until a country is chosen
+    if (startQuizButton) {
+        try {
+            startQuizButton.removeEventListener('click', handlePlayAgain);
+        } catch (e) {}
+        // make sure the regular beginQuiz is wired
+        startQuizButton.removeEventListener('click', beginQuiz);
+        startQuizButton.addEventListener('click', beginQuiz);
+        startQuizButton.textContent = 'Start Quiz';
+        startQuizButton.classList.add('hidden');
+        startQuizButton.setAttribute('aria-hidden', 'true');
+    }
 }
 
 function resetScoresForNewQuiz() {
